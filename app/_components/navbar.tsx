@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const dropdownNavs = [
@@ -9,7 +10,7 @@ const dropdownNavs = [
       {
         title: "Analytics",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -30,7 +31,7 @@ const dropdownNavs = [
       {
         title: "Reports",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +51,7 @@ const dropdownNavs = [
       {
         title: "Blog",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +66,7 @@ const dropdownNavs = [
       {
         title: "Community",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +86,7 @@ const dropdownNavs = [
       {
         title: "About us",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -104,7 +105,7 @@ const dropdownNavs = [
       {
         title: "Careers",
         desc: "Duis aute irure dolor in reprehenderit",
-        path: "javascript:void(0)",
+        path: "#",
         icon: (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -132,17 +133,17 @@ export const Navbar = () => {
     idx: null,
   });
 
-  // Replace javascript:void(0) paths with your paths
+  // Replace # paths with your paths
   const navigation = [
     {
       title: "Features",
-      path: "javascript:void(0)",
+      path: "#",
       isDrapdown: true,
       navs: dropdownNavs,
     },
-    { title: "Integrations", path: "javascript:void(0)", isDrapdown: false },
-    { title: "Customers", path: "javascript:void(0)", isDrapdown: false },
-    { title: "Pricing", path: "javascript:void(0)", isDrapdown: false },
+    { title: "Integrations", path: "#", isDrapdown: false },
+    { title: "Customers", path: "#", isDrapdown: false },
+    { title: "Pricing", path: "#", isDrapdown: false },
   ];
 
   useEffect(() => {
@@ -162,7 +163,7 @@ export const Navbar = () => {
       >
         <div className="items-center gap-x-14 px-4 max-w-screen-xl mx-auto md:flex md:px-8">
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
-            <a href="javascript:void(0)">
+            <a href="#">
               <img
                 src="https://www.floatui.com/logo.svg"
                 width={120}
@@ -305,20 +306,20 @@ export const Navbar = () => {
               })}
               <div className="flex-1 items-center justify-end gap-x-6 space-y-3 md:flex md:space-y-0">
                 <li>
-                  <a
-                    href="javascript:void(0)"
+                  <Link
+                    href="/sign-in"
                     className="block py-3 text-center text-gray-700 hover:text-indigo-600 border rounded-lg md:border-none"
                   >
                     Log in
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0)"
+                  <Link
+                    href={`/sign-up`}
                     className="block py-3 px-4 font-medium text-center text-white bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 active:shadow-none rounded-lg shadow md:inline"
                   >
-                    Sign in
-                  </a>
+                    Sign up
+                  </Link>
                 </li>
               </div>
             </ul>
