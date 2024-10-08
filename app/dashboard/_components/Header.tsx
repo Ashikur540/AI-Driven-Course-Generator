@@ -1,4 +1,12 @@
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { UserButton } from "@clerk/nextjs";
 import {
@@ -70,20 +78,20 @@ function Header() {
             </Link>
           </nav>
           <div className="mt-auto">
-            {/* <Card>
-                  <CardHeader>
-                    <CardTitle>Upgrade to Pro</CardTitle>
-                    <CardDescription>
-                      Unlock all features and get unlimited access to our
-                      support team.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button size="sm" className="w-full">
-                      Upgrade
-                    </Button>
-                  </CardContent>
-                </Card> */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Upgrade to Pro</CardTitle>
+                <CardDescription>
+                  Unlock all features and get unlimited access to our support
+                  team.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button size="sm" className="w-full">
+                  Upgrade
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </SheetContent>
       </Sheet>
@@ -91,9 +99,9 @@ function Header() {
         <form>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <input
+            <Input
               type="search"
-              placeholder="Search products..."
+              placeholder="Search course..."
               className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
             />
           </div>

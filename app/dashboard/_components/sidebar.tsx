@@ -54,7 +54,7 @@ function Sidebar() {
           </nav>
         </div>
         <div className="mt-auto p-4">
-          <Card x-chunk="dashboard-02-chunk-0">
+          <Card className="p-2">
             <Progress value={50} />
             <CardHeader className="p-2 pt-0 md:p-4">
               <CardTitle>Upgrade to Pro</CardTitle>
