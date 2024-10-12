@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import React, { ChangeEvent, useCallback, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,28 +10,62 @@ import {
   SelectValue,
 } from "./select";
 
-type InputWithSelectProps = {
-  selectInputs: string[];
+type InputWithSelectVal<T> = {
+  inputFieldVal: T;
+  selectInputVal: string;
 };
 
-const InputWithSelect = ({ selectInputs }: InputWithSelectProps) => {
-  // price dropdown actions
-  const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
-  //   const [selectedCurrencyType, setSelectedCurrencyType] = useState("USD");
+type InputWithSelectProps<T> = {
+  selectInputs: string[];
+  inputFieldType: React.InputHTMLAttributes<HTMLInputElement>["type"];
+  inputFieldPlaceholder?: string;
+  onInputWithSelectChange: (val: InputWithSelectVal<T>) => void;
+  initialInputValue?: T;
+  initialSelectValue?: string;
+};
 
-  //   const handlePriceDropdownClick = (currency: string) => {
-  //     setSelectedCurrencyType(currency);
-  //     setPriceDropdownOpen(false);
-  //   };
+function InputWithSelect<T extends string | number>({
+  selectInputs,
+  inputFieldType,
+  inputFieldPlaceholder,
+  onInputWithSelectChange,
+  initialInputValue = "" as T,
+  initialSelectValue = "",
+}: InputWithSelectProps<T>) {
+  const [selectInputVal, setSelectInputVal] = useState(initialSelectValue);
+  const [inputFieldVal, setInputFieldVal] = useState<T>(initialInputValue);
+
+  const handleInputChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const newValue =
+        inputFieldType === "number"
+          ? (Number(e.target.value) as T)
+          : (e.target.value as T);
+      setInputFieldVal(newValue);
+      onInputWithSelectChange({ inputFieldVal: newValue, selectInputVal });
+    },
+    [inputFieldType, selectInputVal, onInputWithSelectChange]
+  );
+
+  const handleSelectChange = useCallback(
+    (value: string) => {
+      setSelectInputVal(value);
+      onInputWithSelectChange({ inputFieldVal, selectInputVal: value });
+    },
+    [inputFieldVal, onInputWithSelectChange]
+  );
 
   return (
     <div className="w-full relative">
-      <Input type="number" placeholder="0" className="" />
-      <div
-        onClick={() => setPriceDropdownOpen(!priceDropdownOpen)}
-        className="absolute top-0 right-0 h-full flex items-center justify-center cursor-pointer  border-[#e5eaf2] "
-      >
-        <Select>
+      <Input
+        type={inputFieldType}
+        placeholder={inputFieldPlaceholder}
+        className=""
+        value={inputFieldVal}
+        onChange={handleInputChange}
+      />
+      <div className="absolute top-0 right-0 h-full flex items-center justify-center cursor-pointer border-[#e5eaf2]">
+        <Select onValueChange={handleSelectChange} value={selectInputVal}>
           <SelectTrigger className="min-w-[80px] shadow">
             <SelectValue placeholder="Unit" />
           </SelectTrigger>
@@ -44,6 +80,6 @@ const InputWithSelect = ({ selectInputs }: InputWithSelectProps) => {
       </div>
     </div>
   );
-};
+}
 
 export default InputWithSelect;

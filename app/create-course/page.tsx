@@ -9,8 +9,13 @@ import { CreateCourseOnboardBodyHeader } from "./_components/course-onboard-body
 import { StepSelectCourseCategory } from "./_components/onboarding-steps/select-course-category";
 import { onboardingStepsData } from "@/constants/onboarding.const";
 import { StepCourseTitleAndDescription } from "./_components/onboarding-steps/course-title-description";
-import { CourseOptions, OnboardingInputs } from "@/types/onboarding.types";
+import {
+  CourseDuration,
+  CourseOptions,
+  OnboardingInputs,
+} from "@/types/onboarding.types";
 import { StepSelectCourseOptions } from "./_components/onboarding-steps/course-options";
+import { createCourseValidationSchema } from "@/lib/validationSchema";
 
 function CreateCourse() {
   const [onboardingSteps, setOnboardingSteps] = useState(onboardingStepsData);
@@ -20,34 +25,55 @@ function CreateCourse() {
     courseTitle: "",
     courseDescription: "",
     courseOptions: {
-      difficultyLevel: "Beginner",
-      duration: "",
+      difficultyLevel: "beginner",
+      duration: {
+        time: 1,
+        unit: "hour",
+      },
       chaptersNo: 0,
       includeVideo: true,
     },
   });
 
   // handlers
-  const handleCourseInputs = (
-    key: keyof OnboardingInputs | keyof CourseOptions,
-    value: string | number
-  ) => {
-    setOnboardingInputs((prev) => {
-      if (key in prev.courseOptions) {
-        return {
-          ...prev,
-          courseOptions: {
-            ...prev.courseOptions,
-            [key]: value,
-          },
-        };
-      }
-      return { ...prev, [key]: value };
-    });
-  };
+  const handleCourseInputs = useCallback(
+    (
+      key: keyof OnboardingInputs | keyof CourseOptions | keyof CourseDuration,
+      value: string | number | CourseDuration
+    ) => {
+      setOnboardingInputs((prev) => {
+        if (key === "duration") {
+          return {
+            ...prev,
+            courseOptions: {
+              ...prev.courseOptions,
+              duration: value as CourseDuration,
+            },
+          };
+        } else if (key in prev.courseOptions) {
+          return {
+            ...prev,
+            courseOptions: {
+              ...prev.courseOptions,
+              [key]: value,
+            },
+          };
+        }
+        return { ...prev, [key]: value };
+      });
+    },
+    []
+  );
 
   console.log("onboardingInputs", onboardingInputs);
 
+  const handleSubmitCreateCourse = useCallback(() => {
+    const result = createCourseValidationSchema.safeParse(onboardingInputs);
+    console.log("result", result);
+    if (!result.success) {
+      console.log("result not success", result.error.flatten().fieldErrors);
+    }
+  }, [onboardingInputs]);
   const handleNextStep = useCallback(() => {
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);
@@ -60,12 +86,15 @@ function CreateCourse() {
         });
       });
     }
-  }, [currentStep, onboardingSteps.length]);
+    if (currentStep === onboardingSteps.length) {
+      handleSubmitCreateCourse();
+    }
+  }, [currentStep, onboardingSteps.length, handleSubmitCreateCourse]);
 
-  console.log(
-    "✨ ~ file: page.tsx:64 ~ CreateCourse ~ onboardingSteps",
-    onboardingSteps
-  );
+  // console.log(
+  //   "✨ ~ file: page.tsx:64 ~ CreateCourse ~ onboardingSteps",
+  //   onboardingSteps
+  // );
 
   const handlePreviousStep = useCallback(() => {
     if (currentStep > 1) {
@@ -95,8 +124,8 @@ function CreateCourse() {
         break;
       case 3:
         if (
-          onboardingInputs?.courseOptions.duration !== "" ||
-          onboardingInputs?.courseOptions.chaptersNo
+          onboardingInputs?.courseOptions.duration.time > 0 ||
+          onboardingInputs?.courseOptions.chaptersNo > 0
         ) {
           disabled = false;
         }
@@ -124,7 +153,7 @@ function CreateCourse() {
           />
           {/* <!-- First Content --> */}
           <>
-            <div className="p-4  bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl min-h-[40vh]">
+            <div className="p-4  bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl min-h-[24vh]">
               {currentStep === 1 && (
                 <StepSelectCourseCategory
                   handleSelectCategory={handleCourseInputs}
@@ -134,11 +163,13 @@ function CreateCourse() {
               {currentStep === 2 && (
                 <StepCourseTitleAndDescription
                   handleChangeCourseInputs={handleCourseInputs}
+                  onboardingInputs={onboardingInputs}
                 />
               )}
               {currentStep === 3 && (
                 <StepSelectCourseOptions
                   handleChangeCourseInputs={handleCourseInputs}
+                  onboardingInputs={onboardingInputs}
                 />
               )}
             </div>

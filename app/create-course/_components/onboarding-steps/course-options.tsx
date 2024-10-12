@@ -9,15 +9,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CourseInputChangeHandler } from "@/types/onboarding.types";
+import {
+  CourseDuration,
+  CourseInputChangeHandler,
+  OnboardingInputs,
+} from "@/types/onboarding.types";
 
 import React from "react";
 
 export const StepSelectCourseOptions = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleChangeCourseInputs,
+  onboardingInputs,
 }: {
   handleChangeCourseInputs: CourseInputChangeHandler;
+  onboardingInputs: OnboardingInputs;
 }) => {
   return (
     <div className="grid md:grid-cols-2 gap-8 w-full">
@@ -28,9 +34,13 @@ export const StepSelectCourseOptions = ({
             onValueChange={(value) =>
               handleChangeCourseInputs("difficultyLevel", value)
             }
+            value={onboardingInputs.courseOptions.difficultyLevel}
           >
             <SelectTrigger className="w-full ">
-              <SelectValue placeholder="Select Difficulty Level" />
+              <SelectValue
+                placeholder="Select Difficulty Level"
+                defaultValue={onboardingInputs.courseOptions.difficultyLevel}
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="beginner">Beginner</SelectItem>
@@ -42,14 +52,13 @@ export const StepSelectCourseOptions = ({
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="include_video">Include Video</Label>
           <RadioGroup
-            defaultValue="option-one"
+            defaultValue={`${
+              onboardingInputs.courseOptions.includeVideo ? "yes" : "no"
+            }`}
             className="flex justify-start items-start"
-            onChange={
-              (e) => {
-                console.log("✨ ~ file: course-options.tsx:48 ~ e:", e);
-              }
-              //   handleChangeCourseInputs("includeVideo", )
-            }
+            onValueChange={(value) => {
+              handleChangeCourseInputs("includeVideo", value);
+            }}
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="yes" id="yes" />
@@ -66,11 +75,36 @@ export const StepSelectCourseOptions = ({
       <div className="w-full items-start flex  flex-col  gap-y-8">
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="course_duration">Course Duration</Label>
-          <InputWithSelect selectInputs={["Hour", "Minute"]} />
+          <InputWithSelect
+            selectInputs={["hour", "minute"]}
+            inputFieldType="number"
+            initialInputValue={onboardingInputs.courseOptions.duration.time}
+            initialSelectValue={onboardingInputs.courseOptions.duration.unit}
+            inputFieldPlaceholder={
+              onboardingInputs.courseOptions.duration.unit === "hour"
+                ? "1 hour"
+                : "min 25 minutes"
+            }
+            onInputWithSelectChange={(value) => {
+              const { inputFieldVal: durationTime, selectInputVal: timeUnit } =
+                value;
+              handleChangeCourseInputs("duration", {
+                time: Number(durationTime),
+                unit: timeUnit as CourseDuration["unit"],
+              });
+            }}
+          />
         </div>
         <div className="w-full flex flex-col gap-y-2">
-          <Label htmlFor="course_duration">No fo Chapters</Label>
-          <Input type="number" placeholder="5" />
+          <Label htmlFor="chapters_no">No of Chapters</Label>
+          <Input
+            type="number"
+            placeholder="minimum 6"
+            onChange={(e) =>
+              handleChangeCourseInputs("chaptersNo", Number(e.target?.value))
+            }
+            value={onboardingInputs.courseOptions.chaptersNo}
+          />
         </div>
       </div>
     </div>

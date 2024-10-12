@@ -1,13 +1,18 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { CourseInputChangeHandler } from "@/types/onboarding.types";
+import {
+  CourseInputChangeHandler,
+  OnboardingInputs,
+} from "@/types/onboarding.types";
 import React from "react";
 
 export const StepCourseTitleAndDescription = ({
   handleChangeCourseInputs,
+  onboardingInputs,
 }: {
   handleChangeCourseInputs: CourseInputChangeHandler;
+  onboardingInputs: OnboardingInputs;
 }) => {
   return (
     <section className="w-full">
@@ -26,6 +31,7 @@ export const StepCourseTitleAndDescription = ({
               onChange={(e) =>
                 handleChangeCourseInputs("courseTitle", e.target.value)
               }
+              value={onboardingInputs.courseTitle}
             />
           </div>
         </div>
@@ -42,6 +48,7 @@ export const StepCourseTitleAndDescription = ({
           onChange={(e) =>
             handleChangeCourseInputs("courseDescription", e.target.value)
           }
+          value={onboardingInputs.courseDescription}
         />
       </div>
     </section>
