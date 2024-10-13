@@ -18,9 +18,18 @@ import { z } from "zod";
 */
 
 export const createCourseValidationSchema = z.object({
-  courseCategory: z.string().min(4, { message: "Course category is required" }),
+  courseCategory: z
+    .string()
+    .trim()
+    .min(4, { message: "Course category is required" }),
   courseTitle: z.string().min(5, { message: "Course title is required" }),
-  courseDescription: z.string().optional(),
+  courseDescription: z
+    .string()
+    .min(50, {
+      message: "Course description must be at least 50 characters long",
+    })
+    .max(460, { message: "Course description must not exceed 260 characters" })
+    .optional(),
   courseOptions: z.object({
     difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
     duration: z
@@ -47,7 +56,9 @@ export const createCourseValidationSchema = z.object({
       }),
     chaptersNo: z
       .number()
+      .max(100, { message: "No of chapters must be at most 100" })
       .min(6, { message: "No of chapters must be at least 6" }),
+
     includeVideo: z.boolean(),
   }),
 });

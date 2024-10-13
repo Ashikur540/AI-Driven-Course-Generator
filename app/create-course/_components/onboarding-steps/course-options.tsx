@@ -11,36 +11,37 @@ import {
 } from "@/components/ui/select";
 import {
   CourseDuration,
-  CourseInputChangeHandler,
+  CourseOptions,
   OnboardingInputs,
 } from "@/types/onboarding.types";
 
 import React from "react";
+import { useFormContext } from "react-hook-form";
 
-export const StepSelectCourseOptions = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleChangeCourseInputs,
-  onboardingInputs,
-}: {
-  handleChangeCourseInputs: CourseInputChangeHandler;
-  onboardingInputs: OnboardingInputs;
-}) => {
+export const StepSelectCourseOptions = () => {
+  const {
+    watch,
+    setValue,
+    formState: { errors },
+  } = useFormContext<OnboardingInputs>();
+  const {
+    courseOptions: { difficultyLevel, duration, includeVideo },
+  } = watch();
   return (
     <div className="grid md:grid-cols-2 gap-8 w-full">
       <div className="w-full items-start flex  flex-col  gap-y-8">
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="difficulty_level">Difficulty Level</Label>
           <Select
-            onValueChange={(value) =>
-              handleChangeCourseInputs("difficultyLevel", value)
+            value={difficultyLevel}
+            onValueChange={(value: CourseOptions["difficultyLevel"]) =>
+              setValue("courseOptions.difficultyLevel", value, {
+                shouldValidate: true,
+              })
             }
-            value={onboardingInputs.courseOptions.difficultyLevel}
           >
             <SelectTrigger className="w-full ">
-              <SelectValue
-                placeholder="Select Difficulty Level"
-                defaultValue={onboardingInputs.courseOptions.difficultyLevel}
-              />
+              <SelectValue placeholder="Select Difficulty Level" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="beginner">Beginner</SelectItem>
@@ -48,17 +49,23 @@ export const StepSelectCourseOptions = ({
               <SelectItem value="advanced">Advanced</SelectItem>
             </SelectContent>
           </Select>
+          {errors.courseOptions?.difficultyLevel && (
+            <p className="text-red-500 text-sm">
+              {errors.courseOptions.difficultyLevel.message}
+            </p>
+          )}
         </div>
+
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="include_video">Include Video</Label>
           <RadioGroup
-            defaultValue={`${
-              onboardingInputs.courseOptions.includeVideo ? "yes" : "no"
-            }`}
+            value={`${includeVideo ? "yes" : "no"}`}
+            onValueChange={(value) =>
+              setValue("courseOptions.includeVideo", value === "yes", {
+                shouldValidate: true,
+              })
+            }
             className="flex justify-start items-start"
-            onValueChange={(value) => {
-              handleChangeCourseInputs("includeVideo", value);
-            }}
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="yes" id="yes" />
@@ -69,6 +76,11 @@ export const StepSelectCourseOptions = ({
               <Label htmlFor="no">No</Label>
             </div>
           </RadioGroup>
+          {errors.courseOptions?.includeVideo && (
+            <p className="text-red-500 text-sm">
+              {errors.courseOptions.includeVideo.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -76,35 +88,55 @@ export const StepSelectCourseOptions = ({
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="course_duration">Course Duration</Label>
           <InputWithSelect
+            inputFieldClassName={`${
+              errors.courseOptions?.duration ? "focus:!ring-red-500" : ""
+            }`}
             selectInputs={["hour", "minute"]}
             inputFieldType="number"
-            initialInputValue={onboardingInputs.courseOptions.duration.time}
-            initialSelectValue={onboardingInputs.courseOptions.duration.unit}
+            initialInputValue={duration.time}
+            initialSelectValue={duration.unit}
             inputFieldPlaceholder={
-              onboardingInputs.courseOptions.duration.unit === "hour"
-                ? "1 hour"
-                : "min 25 minutes"
+              duration.unit === "hour" ? "1 hour" : "min 25 minutes"
             }
             onInputWithSelectChange={(value) => {
               const { inputFieldVal: durationTime, selectInputVal: timeUnit } =
                 value;
-              handleChangeCourseInputs("duration", {
-                time: Number(durationTime),
-                unit: timeUnit as CourseDuration["unit"],
-              });
+              setValue(
+                "courseOptions.duration",
+                {
+                  time: Number(durationTime),
+                  unit: timeUnit as CourseDuration["unit"],
+                },
+                { shouldValidate: true }
+              );
             }}
           />
+          {errors.courseOptions?.duration && (
+            <p className="text-red-500 text-sm">
+              {errors.courseOptions.duration.message}
+            </p>
+          )}
         </div>
+
         <div className="w-full flex flex-col gap-y-2">
           <Label htmlFor="chapters_no">No of Chapters</Label>
           <Input
             type="number"
             placeholder="minimum 6"
             onChange={(e) =>
-              handleChangeCourseInputs("chaptersNo", Number(e.target?.value))
+              setValue("courseOptions.chaptersNo", Number(e.target.value), {
+                shouldValidate: true,
+              })
             }
-            value={onboardingInputs.courseOptions.chaptersNo}
+            className={`${
+              errors.courseOptions?.chaptersNo ? "focus:!ring-red-500" : ""
+            }`}
           />
+          {errors.courseOptions?.chaptersNo && (
+            <p className="text-red-500 text-sm">
+              {errors.courseOptions.chaptersNo.message}
+            </p>
+          )}
         </div>
       </div>
     </div>

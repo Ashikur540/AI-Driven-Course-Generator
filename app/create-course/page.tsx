@@ -2,6 +2,8 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { CreateCourseOnboardHeader } from "./_components/Create-course-onboard-header";
 import { Button } from "@/components/ui/button";
@@ -9,72 +11,62 @@ import { CreateCourseOnboardBodyHeader } from "./_components/course-onboard-body
 import { StepSelectCourseCategory } from "./_components/onboarding-steps/select-course-category";
 import { onboardingStepsData } from "@/constants/onboarding.const";
 import { StepCourseTitleAndDescription } from "./_components/onboarding-steps/course-title-description";
-import {
-  CourseDuration,
-  CourseOptions,
-  OnboardingInputs,
-} from "@/types/onboarding.types";
+import { OnboardingInputs } from "@/types/onboarding.types";
 import { StepSelectCourseOptions } from "./_components/onboarding-steps/course-options";
 import { createCourseValidationSchema } from "@/lib/validationSchema";
+
+const onboardingInputsDefaultValues: OnboardingInputs = {
+  courseCategory: "",
+  courseTitle: "",
+  courseDescription: "",
+  courseOptions: {
+    difficultyLevel: "beginner",
+    duration: {
+      time: 1,
+      unit: "hour",
+    },
+    chaptersNo: 0,
+    includeVideo: true,
+  },
+};
 
 function CreateCourse() {
   const [onboardingSteps, setOnboardingSteps] = useState(onboardingStepsData);
   const [currentStep, setCurrentStep] = useState(1);
-  const [onboardingInputs, setOnboardingInputs] = useState<OnboardingInputs>({
-    courseCategory: "",
-    courseTitle: "",
-    courseDescription: "",
-    courseOptions: {
-      difficultyLevel: "beginner",
-      duration: {
-        time: 1,
-        unit: "hour",
-      },
-      chaptersNo: 0,
-      includeVideo: true,
-    },
+
+  const formMethods = useForm<OnboardingInputs>({
+    resolver: zodResolver(createCourseValidationSchema),
+    defaultValues: onboardingInputsDefaultValues,
   });
+  const {
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
 
-  // handlers
-  const handleCourseInputs = useCallback(
-    (
-      key: keyof OnboardingInputs | keyof CourseOptions | keyof CourseDuration,
-      value: string | number | CourseDuration
-    ) => {
-      setOnboardingInputs((prev) => {
-        if (key === "duration") {
-          return {
-            ...prev,
-            courseOptions: {
-              ...prev.courseOptions,
-              duration: value as CourseDuration,
-            },
-          };
-        } else if (key in prev.courseOptions) {
-          return {
-            ...prev,
-            courseOptions: {
-              ...prev.courseOptions,
-              [key]: value,
-            },
-          };
-        }
-        return { ...prev, [key]: value };
-      });
-    },
-    []
-  );
+  const {
+    courseCategory,
+    courseTitle,
+    courseOptions: { duration, chaptersNo },
+  } = watch();
 
-  console.log("onboardingInputs", onboardingInputs);
-
-  const handleSubmitCreateCourse = useCallback(() => {
-    const result = createCourseValidationSchema.safeParse(onboardingInputs);
+  const handleSubmitCreateCourse = handleSubmit((data) => {
+    const result = createCourseValidationSchema.safeParse(data);
     console.log("result", result);
     if (!result.success) {
       console.log("result not success", result.error.flatten().fieldErrors);
     }
-  }, [onboardingInputs]);
+  });
+
   const handleNextStep = useCallback(() => {
+    if (
+      errors.courseCategory ||
+      errors.courseTitle ||
+      errors.courseDescription ||
+      errors.courseOptions
+    )
+      return;
+
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);
       setOnboardingSteps((prev) => {
@@ -85,16 +77,10 @@ function CreateCourse() {
           return step;
         });
       });
-    }
-    if (currentStep === onboardingSteps.length) {
+    } else if (currentStep === onboardingSteps.length) {
       handleSubmitCreateCourse();
     }
-  }, [currentStep, onboardingSteps.length, handleSubmitCreateCourse]);
-
-  // console.log(
-  //   "✨ ~ file: page.tsx:64 ~ CreateCourse ~ onboardingSteps",
-  //   onboardingSteps
-  // );
+  }, [currentStep, onboardingSteps.length, handleSubmitCreateCourse, errors]);
 
   const handlePreviousStep = useCallback(() => {
     if (currentStep > 1) {
@@ -113,20 +99,17 @@ function CreateCourse() {
     let disabled = true;
     switch (currentStep) {
       case 1:
-        if (onboardingInputs?.courseCategory !== "") {
+        if (courseCategory !== "") {
           disabled = false;
         }
         break;
       case 2:
-        if (onboardingInputs?.courseTitle !== "") {
+        if (courseTitle.trim() !== "") {
           disabled = false;
         }
         break;
       case 3:
-        if (
-          onboardingInputs?.courseOptions.duration.time > 0 ||
-          onboardingInputs?.courseOptions.chaptersNo > 0
-        ) {
+        if (duration.time > 0 || chaptersNo > 0) {
           disabled = false;
         }
         break;
@@ -152,28 +135,13 @@ function CreateCourse() {
             total={onboardingSteps.length}
           />
           {/* <!-- First Content --> */}
-          <>
+          <FormProvider {...formMethods}>
             <div className="p-4  bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl min-h-[24vh]">
-              {currentStep === 1 && (
-                <StepSelectCourseCategory
-                  handleSelectCategory={handleCourseInputs}
-                  selectedCategory={onboardingInputs?.courseCategory}
-                />
-              )}
-              {currentStep === 2 && (
-                <StepCourseTitleAndDescription
-                  handleChangeCourseInputs={handleCourseInputs}
-                  onboardingInputs={onboardingInputs}
-                />
-              )}
-              {currentStep === 3 && (
-                <StepSelectCourseOptions
-                  handleChangeCourseInputs={handleCourseInputs}
-                  onboardingInputs={onboardingInputs}
-                />
-              )}
+              {currentStep === 1 && <StepSelectCourseCategory />}
+              {currentStep === 2 && <StepCourseTitleAndDescription />}
+              {currentStep === 3 && <StepSelectCourseOptions />}
             </div>
-          </>
+          </FormProvider>
           {/* <!-- End First Content --> */}
           <div className="mt-5 flex justify-between items-center gap-x-2">
             <Button

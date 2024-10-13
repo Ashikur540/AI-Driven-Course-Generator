@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
+import { cn } from "@/lib/utils";
 
 type InputWithSelectVal<T> = {
   inputFieldVal: T;
@@ -22,6 +23,7 @@ type InputWithSelectProps<T> = {
   onInputWithSelectChange: (val: InputWithSelectVal<T>) => void;
   initialInputValue?: T;
   initialSelectValue?: string;
+  inputFieldClassName?: string;
 };
 
 function InputWithSelect<T extends string | number>({
@@ -31,6 +33,7 @@ function InputWithSelect<T extends string | number>({
   onInputWithSelectChange,
   initialInputValue = "" as T,
   initialSelectValue = "",
+  inputFieldClassName,
 }: InputWithSelectProps<T>) {
   const [selectInputVal, setSelectInputVal] = useState(initialSelectValue);
   const [inputFieldVal, setInputFieldVal] = useState<T>(initialInputValue);
@@ -60,7 +63,7 @@ function InputWithSelect<T extends string | number>({
       <Input
         type={inputFieldType}
         placeholder={inputFieldPlaceholder}
-        className=""
+        className={cn(inputFieldClassName)}
         value={inputFieldVal}
         onChange={handleInputChange}
       />

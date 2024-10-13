@@ -17,7 +17,7 @@ export type OnboardingInputs = {
   courseOptions: CourseOptions;
 };
 
-export type CourseInputChangeHandler = (
-  key: keyof OnboardingInputs | keyof CourseOptions,
-  value: string | number | CourseDuration
-) => void;
+// export type CourseInputChangeHandler = (
+//   key: keyof OnboardingInputs | keyof CourseOptions,
+//   value: string | number | CourseDuration
+// ) => void;
