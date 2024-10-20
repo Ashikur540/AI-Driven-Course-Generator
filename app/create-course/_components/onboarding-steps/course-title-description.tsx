@@ -15,7 +15,7 @@ export const StepCourseTitleAndDescription = () => {
   } = useFormContext<OnboardingInputs>();
 
   const descriptionLen = watch("courseDescription")?.length;
-  console.log(errors);
+
   return (
     <section className="w-full">
       <div className="flex flex-col sm:flex-row items-center gap-[20px]">
@@ -46,9 +46,10 @@ export const StepCourseTitleAndDescription = () => {
       <div className="flex flex-col gap-[8px] w-full mt-[20px] ">
         <Label htmlFor="course_additional_details">
           Tell us more about what you want to learn. You can mention such topics
+          <span className="text-red-600">*</span>
           <span
             className={`${
-              descriptionLen && (descriptionLen < 50 || descriptionLen > 460)
+              descriptionLen && (descriptionLen < 40 || descriptionLen > 460)
                 ? "text-red-500"
                 : "text-gray-500"
             }`}
@@ -66,7 +67,7 @@ export const StepCourseTitleAndDescription = () => {
               shouldValidate: true,
             })
           }
-
+          value={watch("courseDescription")}
           // {...register("courseDescription")}
         />
         {errors.courseDescription && (

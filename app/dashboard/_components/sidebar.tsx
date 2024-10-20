@@ -23,7 +23,7 @@ import { Progress } from "@/components/ui/progress";
 
 function Sidebar() {
   const path = usePathname();
-  console.log("✨ ~ file: sidebar.tsx:16 ~ Sidebar ~ path:", path);
+
   return (
     <div className="hidden border-r bg-muted/40 md:block">
       <div className="flex h-full max-h-screen flex-col gap-2">

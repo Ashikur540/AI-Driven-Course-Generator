@@ -1,35 +1,17 @@
 import { z } from "zod";
-/*
-{
-    courseCategory: "",
-    courseTitle: "",
-    courseDescription: "",
-    courseOptions: {
-      difficultyLevel: "beginner",
-      duration: {
-        time: 1,
-        unit: "hour",
-      },
-      chaptersNo: 0,
-      includeVideo: true,
-    },
-  }
 
-*/
-
-export const createCourseValidationSchema = z.object({
+export const courseSchema = z.object({
   courseCategory: z
     .string()
     .trim()
     .min(4, { message: "Course category is required" }),
-  courseTitle: z.string().min(5, { message: "Course title is required" }),
+  courseTitle: z.string().min(4, { message: "Course title is required" }),
   courseDescription: z
     .string()
-    .min(50, {
-      message: "Course description must be at least 50 characters long",
+    .min(40, {
+      message: "Course description must be at least 40 characters long",
     })
-    .max(460, { message: "Course description must not exceed 260 characters" })
-    .optional(),
+    .max(460, { message: "Course description must not exceed 260 characters" }),
   courseOptions: z.object({
     difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
     duration: z
@@ -61,4 +43,12 @@ export const createCourseValidationSchema = z.object({
 
     includeVideo: z.boolean(),
   }),
+});
+
+export const userSchema = z.object({
+  email: z.string().email(),
+  fullName: z.string().min(1),
+  imageURL: z.string().url(),
+  role: z.enum(["user"]),
+  courses: z.array(z.string()),
 });

@@ -128,6 +128,7 @@ export const StepSelectCourseOptions = () => {
                 shouldValidate: true,
               })
             }
+            value={watch("courseOptions.chaptersNo")}
             className={`${
               errors.courseOptions?.chaptersNo ? "focus:!ring-red-500" : ""
             }`}

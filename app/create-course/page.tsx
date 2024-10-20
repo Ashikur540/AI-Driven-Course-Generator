@@ -13,7 +13,13 @@ import { onboardingStepsData } from "@/constants/onboarding.const";
 import { StepCourseTitleAndDescription } from "./_components/onboarding-steps/course-title-description";
 import { OnboardingInputs } from "@/types/onboarding.types";
 import { StepSelectCourseOptions } from "./_components/onboarding-steps/course-options";
-import { createCourseValidationSchema } from "@/lib/validationSchema";
+
+import { generateCourseGenAIPrompt } from "@/lib/utils";
+import { courseGenChatSession } from "@/configs/geminiAiConfig";
+import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
+import { courseSchema } from "@/lib/validationSchemas";
+import { createCourse } from "@/server/actions/courses";
+import { useRouter } from "next/navigation";
 
 const onboardingInputsDefaultValues: OnboardingInputs = {
   courseCategory: "",
@@ -31,11 +37,13 @@ const onboardingInputsDefaultValues: OnboardingInputs = {
 };
 
 function CreateCourse() {
+  const router = useRouter();
   const [onboardingSteps, setOnboardingSteps] = useState(onboardingStepsData);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoadingCourseGen, setIsLoadingCourseGen] = useState(false);
 
   const formMethods = useForm<OnboardingInputs>({
-    resolver: zodResolver(createCourseValidationSchema),
+    resolver: zodResolver(courseSchema),
     defaultValues: onboardingInputsDefaultValues,
   });
   const {
@@ -47,25 +55,74 @@ function CreateCourse() {
   const {
     courseCategory,
     courseTitle,
+    courseDescription,
     courseOptions: { duration, chaptersNo },
   } = watch();
 
-  const handleSubmitCreateCourse = handleSubmit((data) => {
-    const result = createCourseValidationSchema.safeParse(data);
-    console.log("result", result);
-    if (!result.success) {
-      console.log("result not success", result.error.flatten().fieldErrors);
+  const handleSubmitCreateCourse = handleSubmit(async (data) => {
+    try {
+      setIsLoadingCourseGen(true);
+
+      const { success, data: courseData, error } = courseSchema.safeParse(data);
+
+      if (!success) {
+        console.log("result not success", error.flatten().fieldErrors);
+        return;
+      }
+
+      const prompt = generateCourseGenAIPrompt({
+        chaptersNo: courseData.courseOptions.chaptersNo,
+        courseCategory: courseData.courseCategory,
+        courseDescription: courseData.courseDescription ?? "",
+        courseTitle: courseData.courseTitle,
+        duration: `${courseData.courseOptions.duration.time} ${
+          courseData.courseOptions.duration.unit
+        }${
+          courseData.courseOptions.duration.unit === "hour" &&
+          courseData.courseOptions.duration.time > 1
+            ? "s"
+            : ""
+        }`,
+        level: courseData.courseOptions.difficultyLevel,
+      });
+
+      const courseLayoutData = await handleGenerateCourseLayout(prompt);
+      console.log("courseLayoutData", courseLayoutData);
+
+      // save that course layout data to the database
+      const savedCourse = await createCourse(courseData, courseLayoutData);
+      console.log("savedCourse", savedCourse);
+
+      // Navigate to the dynamic course page
+      router.push(`/create-course/${savedCourse._id}`);
+    } catch (error) {
+      console.error("error", error);
+    } finally {
+      setIsLoadingCourseGen(false);
     }
   });
 
+  const handleGenerateCourseLayout = async (prompt: string) => {
+    try {
+      const result = await courseGenChatSession.sendMessage(prompt);
+      return JSON.parse(result.response.text());
+    } catch (error) {
+      console.error("error", error);
+    } finally {
+    }
+  };
+
   const handleNextStep = useCallback(() => {
     if (
-      errors.courseCategory ||
-      errors.courseTitle ||
-      errors.courseDescription ||
-      errors.courseOptions
-    )
+      currentStep > 1 &&
+      (errors.courseCategory ||
+        errors.courseTitle ||
+        errors.courseDescription ||
+        errors.courseOptions)
+    ) {
+      console.log("errors", errors);
       return;
+    }
 
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);
@@ -104,7 +161,7 @@ function CreateCourse() {
         }
         break;
       case 2:
-        if (courseTitle.trim() !== "") {
+        if (courseTitle.trim() !== "" && courseDescription.trim() !== "") {
           disabled = false;
         }
         break;
@@ -124,7 +181,10 @@ function CreateCourse() {
     <div className="flex justify-center items-center p-6 sm:p-10 lg:p-20">
       {/* <!-- Stepper --> */}
       <div className="max-w-screen-md w-full">
-        <CreateCourseOnboardHeader />
+        <CreateCourseOnboardHeader
+          currentStep={currentStep}
+          totalSteps={onboardingSteps.length}
+        />
 
         {/* <!-- Stepper Content --> */}
         <div className="mt-5 sm:mt-8">
@@ -163,6 +223,7 @@ function CreateCourse() {
           </div>
         </div>
       </div>
+      <CourseGenLoadingModal isLoadingCourseGen={isLoadingCourseGen} />
     </div>
   );
 }
