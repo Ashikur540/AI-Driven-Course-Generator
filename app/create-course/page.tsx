@@ -18,8 +18,9 @@ import { generateCourseGenAIPrompt } from "@/lib/utils";
 import { courseGenChatSession } from "@/configs/geminiAiConfig";
 import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
 import { courseSchema } from "@/lib/validationSchemas";
-import { createCourse } from "@/server/actions/courses";
+import { saveCourseToDB } from "@/server/actions/courses";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const onboardingInputsDefaultValues: OnboardingInputs = {
   courseCategory: "",
@@ -38,6 +39,7 @@ const onboardingInputsDefaultValues: OnboardingInputs = {
 
 function CreateCourse() {
   const router = useRouter();
+  const { toast } = useToast();
   const [onboardingSteps, setOnboardingSteps] = useState(onboardingStepsData);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoadingCourseGen, setIsLoadingCourseGen] = useState(false);
@@ -67,6 +69,14 @@ function CreateCourse() {
 
       if (!success) {
         console.log("result not success", error.flatten().fieldErrors);
+
+        // Show toast for validation error
+        toast({
+          variant: "destructive",
+          title: "Validation Error",
+          description: "Please check the form fields and try again.",
+        });
+
         return;
       }
 
@@ -90,13 +100,20 @@ function CreateCourse() {
       console.log("courseLayoutData", courseLayoutData);
 
       // save that course layout data to the database
-      const savedCourse = await createCourse(courseData, courseLayoutData);
+      const savedCourse = await saveCourseToDB(courseData, courseLayoutData);
       console.log("savedCourse", savedCourse);
 
       // Navigate to the dynamic course page
       router.push(`/create-course/${savedCourse._id}`);
     } catch (error) {
       console.error("error", error);
+
+      // Show toast for generic error
+      toast({
+        variant: "destructive",
+        title: "Something went wrong.",
+        description: "Please try again.",
+      });
     } finally {
       setIsLoadingCourseGen(false);
     }

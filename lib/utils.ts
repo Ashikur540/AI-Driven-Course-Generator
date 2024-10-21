@@ -26,5 +26,5 @@ export function generateCourseGenAIPrompt({
     courseDescription &&
     `This is some description or some context about the course: ${courseDescription}`
   }.
-  The course must be ${duration} long and should have ${chaptersNo} chapters in JSON format. Also include course title, description, category,duration,level and requirement list as a form of array and learning outcomes array as fields in that JSON format.`;
+  The course must be ${duration} long and should have ${chaptersNo} chapters in JSON format. This json should include CourseTitle, CourseDescription, CourseCategory,CourseDuration,CourseLevel, requirementList as a form of array, learningOutcomes array and a chapters array which should an array of object with following properties: title, description, duration. You should paraphrase the course title and description and make it more engaging and interesting. Keep in mind always give same format of json response and use camel case for all the fields. `;
 }

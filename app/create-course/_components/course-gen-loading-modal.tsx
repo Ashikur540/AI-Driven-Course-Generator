@@ -7,6 +7,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import Image from "next/image";
+import { outfit } from "@/app/fonts";
 
 export const CourseGenLoadingModal = ({
   isLoadingCourseGen,
@@ -15,8 +16,7 @@ export const CourseGenLoadingModal = ({
 }) => {
   return (
     <AlertDialog open={isLoadingCourseGen}>
-      {/* <AlertDialogTrigger>Open</AlertDialogTrigger> */}
-      <AlertDialogContent>
+      <AlertDialogContent className={outfit.className}>
         <AlertDialogHeader>
           <AlertDialogTitle className="text-center">
             Course Generation in Progress
@@ -33,10 +33,6 @@ export const CourseGenLoadingModal = ({
             This may take a few minutes. Please do not close this page.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {/* <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter> */}
       </AlertDialogContent>
     </AlertDialog>
   );

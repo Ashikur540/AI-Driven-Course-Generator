@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { courseSchema } from "@/lib/validationSchemas";
 import { ObjectId } from "mongoose";
+import { CourseLayoutData } from "@/types/courses.types";
 
 export type CourseType = {
   title: z.infer<typeof courseSchema>["courseTitle"];
@@ -11,7 +12,7 @@ export type CourseType = {
   duration: string;
   level: z.infer<typeof courseSchema>["courseOptions"]["difficultyLevel"];
   chaptersNo: z.infer<typeof courseSchema>["courseOptions"]["chaptersNo"];
-  courseLayoutData: object;
+  courseLayoutData: CourseLayoutData;
   videoIncluded: boolean;
   courseCreator: ObjectId;
 };

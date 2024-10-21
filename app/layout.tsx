@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import QueryProvider from "@/providers/QueryProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
+import QueryProvider from "@/providers/QueryProvider";
+import { outfit } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +20,7 @@ export default function RootLayout({
       <html lang="en">
         <body>
           <QueryProvider>
-            <main className={`${inter.className}`}>{children}</main>
+            <main className={`${outfit.className}`}>{children}</main>
           </QueryProvider>
         </body>
       </html>
