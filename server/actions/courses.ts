@@ -19,7 +19,7 @@ export async function saveCourseToDB(
     chapters,
     courseDuration,
     courseLevel,
-  } = courseLayoutData;
+  } = courseLayoutData || {};
   try {
     await connectToDB();
     const { userId: clerkId } = auth();
@@ -44,14 +44,44 @@ export async function saveCourseToDB(
       videoIncluded: data.courseOptions.includeVideo,
       courseCreator: user?._id,
     } as CourseType);
+    //  also save the course to the users data
+    await User.findByIdAndUpdate(
+      user._id,
+      {
+        $push: { courses: newCourse._id },
+      },
+      { new: true }
+    );
     return JSON.parse(JSON.stringify(newCourse));
   } catch (error) {
     console.log(error);
+    throw error;
   }
 }
 
 export async function getCourseById(courseId: string) {
   await connectToDB();
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).populate("courseCreator");
   return JSON.parse(JSON.stringify(course));
+}
+
+// this function updates the course info like title description or even chapters details like chapter title description etc
+export async function updateCourseInfo(
+  courseId: string,
+  courseInfo: Partial<CourseType>
+) {
+  await connectToDB();
+  //  check if logged in or not
+  const { userId: clerkId } = auth();
+  if (!clerkId) throw new Error("Unauthorized");
+
+  //  check if course exists
+  const course = await Course.findById(courseId);
+  if (!course) throw new Error("Course not found");
+
+  // update the course info
+  const updatedCourse = await Course.findByIdAndUpdate(courseId, courseInfo, {
+    new: true,
+  });
+  return JSON.parse(JSON.stringify(updatedCourse));
 }

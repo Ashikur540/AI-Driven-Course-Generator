@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 
 import { CreateCourseOnboardHeader } from "./_components/Create-course-onboard-header";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,6 @@ import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
 import { courseSchema } from "@/lib/validationSchemas";
 import { saveCourseToDB } from "@/server/actions/courses";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 
 const onboardingInputsDefaultValues: OnboardingInputs = {
   courseCategory: "",
@@ -39,7 +39,6 @@ const onboardingInputsDefaultValues: OnboardingInputs = {
 
 function CreateCourse() {
   const router = useRouter();
-  const { toast } = useToast();
   const [onboardingSteps, setOnboardingSteps] = useState(onboardingStepsData);
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoadingCourseGen, setIsLoadingCourseGen] = useState(false);
@@ -47,6 +46,7 @@ function CreateCourse() {
   const formMethods = useForm<OnboardingInputs>({
     resolver: zodResolver(courseSchema),
     defaultValues: onboardingInputsDefaultValues,
+    mode: "onChange",
   });
   const {
     watch,
@@ -66,17 +66,12 @@ function CreateCourse() {
       setIsLoadingCourseGen(true);
 
       const { success, data: courseData, error } = courseSchema.safeParse(data);
-
+      console.log("this is submit fn");
       if (!success) {
         console.log("result not success", error.flatten().fieldErrors);
 
         // Show toast for validation error
-        toast({
-          variant: "destructive",
-          title: "Validation Error",
-          description: "Please check the form fields and try again.",
-        });
-
+        toast.error("Please check the form fields and try again.");
         return;
       }
 
@@ -109,11 +104,7 @@ function CreateCourse() {
       console.error("error", error);
 
       // Show toast for generic error
-      toast({
-        variant: "destructive",
-        title: "Something went wrong.",
-        description: "Please try again.",
-      });
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoadingCourseGen(false);
     }
@@ -130,16 +121,16 @@ function CreateCourse() {
   };
 
   const handleNextStep = useCallback(() => {
-    if (
-      currentStep > 1 &&
-      (errors.courseCategory ||
-        errors.courseTitle ||
-        errors.courseDescription ||
-        errors.courseOptions)
-    ) {
-      console.log("errors", errors);
+    // Check for errors
+    const hasErrors = Object.keys(errors).length > 0;
+    if (hasErrors) {
+      console.log("hasErrors", hasErrors);
+      toast.error("Please check the form fields and try again.", {
+        position: "bottom-center",
+      });
       return;
     }
+    console.log("next fn", currentStep);
 
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);

@@ -6,6 +6,7 @@ import useCourseQuery from "@/hooks/query/useCourse";
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { EditCourseInfoModal } from "./edit-course-info-modal";
 
 type CourseLayoutHeroProps = {
   courseId: string;
@@ -13,7 +14,7 @@ type CourseLayoutHeroProps = {
 
 export const CourseLayoutHero = ({ courseId }: CourseLayoutHeroProps) => {
   const { data: courseData } = useCourseQuery(courseId);
-
+  console.log(courseData);
   const { courseTitle, courseDescription, courseCategory } =
     courseData?.courseLayoutData ?? {};
   return (
@@ -24,8 +25,13 @@ export const CourseLayoutHero = ({ courseId }: CourseLayoutHeroProps) => {
           <Link href={`/courses/${courseCategory}`}>
             <Badge variant={"outline"}>{courseCategory}</Badge>
           </Link>
-          <h2 className="text-2xl font-bold">{courseTitle}</h2>
-          <p className="text-sm text-zinc-500">{courseDescription}</p>
+          <h2 className="text-2xl font-bold">
+            {courseTitle} <EditCourseInfoModal courseId={courseId} />
+          </h2>
+          <p className="text-sm text-zinc-500">
+            {courseDescription}
+            <EditCourseInfoModal courseId={courseId} />
+          </p>
           <Button>Start Course</Button>
         </div>
         <Image src="/placeholder.png" alt="course" width={400} height={320} />

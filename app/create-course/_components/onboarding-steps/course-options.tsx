@@ -1,4 +1,5 @@
-import { Input } from "@/components/ui/input";
+import FormInput from "@/components/form-input-elements/form-input";
+
 import InputWithSelect from "@/components/ui/input-with-select-combined";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -22,6 +23,7 @@ export const StepSelectCourseOptions = () => {
   const {
     watch,
     setValue,
+    control,
     formState: { errors },
   } = useFormContext<OnboardingInputs>();
   const {
@@ -118,26 +120,17 @@ export const StepSelectCourseOptions = () => {
           )}
         </div>
 
-        <div className="w-full flex flex-col gap-y-2">
-          <Label htmlFor="chapters_no">No of Chapters</Label>
-          <Input
-            type="number"
-            placeholder="minimum 6"
-            onChange={(e) =>
-              setValue("courseOptions.chaptersNo", Number(e.target.value), {
-                shouldValidate: true,
-              })
-            }
-            value={watch("courseOptions.chaptersNo")}
-            className={`${
-              errors.courseOptions?.chaptersNo ? "focus:!ring-red-500" : ""
-            }`}
+        <div className="w-full flex flex-col">
+          <FormInput
+            inputProps={{
+              label: "No of Chapters",
+              required: true,
+              placeholder: "minimum 6",
+              type: "number",
+            }}
+            name="courseOptions.chaptersNo"
+            control={control}
           />
-          {errors.courseOptions?.chaptersNo && (
-            <p className="text-red-500 text-sm">
-              {errors.courseOptions.chaptersNo.message}
-            </p>
-          )}
         </div>
       </div>
     </div>

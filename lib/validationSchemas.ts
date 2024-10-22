@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const courseDesCharLimit = 460;
+
 export const courseSchema = z.object({
   courseCategory: z
     .string()
@@ -11,7 +13,9 @@ export const courseSchema = z.object({
     .min(40, {
       message: "Course description must be at least 40 characters long",
     })
-    .max(460, { message: "Course description must not exceed 260 characters" }),
+    .max(courseDesCharLimit, {
+      message: `Course description must not exceed ${courseDesCharLimit} characters`,
+    }),
   courseOptions: z.object({
     difficultyLevel: z.enum(["beginner", "intermediate", "advanced"]),
     duration: z
@@ -51,4 +55,9 @@ export const userSchema = z.object({
   imageURL: z.string().url(),
   role: z.enum(["user"]),
   courses: z.array(z.string()),
+});
+
+export const courseBasicInfoSchema = z.object({
+  courseTitle: courseSchema.shape.courseTitle,
+  courseDescription: courseSchema.shape.courseDescription,
 });
