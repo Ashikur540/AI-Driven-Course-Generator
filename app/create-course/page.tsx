@@ -199,7 +199,6 @@ function CreateCourse() {
             current={currentStep}
             total={onboardingSteps.length}
           />
-          {/* <!-- First Content --> */}
           <FormProvider {...formMethods}>
             <div className="p-4  bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl min-h-[24vh]">
               {currentStep === 1 && <StepSelectCourseCategory />}
@@ -207,7 +206,6 @@ function CreateCourse() {
               {currentStep === 3 && <StepSelectCourseOptions />}
             </div>
           </FormProvider>
-          {/* <!-- End First Content --> */}
           <div className="mt-5 flex justify-between items-center gap-x-2">
             <Button
               variant="outline"

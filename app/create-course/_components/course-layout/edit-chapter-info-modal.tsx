@@ -26,7 +26,6 @@ import {
 
 import { chapterInfoSchema, courseDesCharLimit } from "@/lib/validationSchemas";
 import { updateChapterInfo } from "@/server/actions/chapters.action";
-import { COURSE_QUERY_KEY } from "@/hooks/query/useCourseQuery";
 
 type EditChapterInfoInput = {
   chapterTitle: string;
@@ -69,7 +68,8 @@ export function EditChapterInfoModal({ chapterId }: { chapterId: string }) {
       console.log(updatedCourseInfo);
       toast.success("Course info updated successfully");
       await queryClient.invalidateQueries({
-        queryKey: [CHAPTERS_QUERY_KEY, chapterId, COURSE_QUERY_KEY],
+        // passing the courseId to invalidate the entire course query because all the chapters are loaded using courseId
+        queryKey: [CHAPTERS_QUERY_KEY, updatedCourseInfo?.courseId],
       });
       setIsOpen(false);
     } catch (error) {

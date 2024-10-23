@@ -4,13 +4,14 @@ import { CourseLayoutHero } from "../_components/course-layout/course-layout-her
 import { CourseLessonsList } from "../_components/course-layout/course-lessions-list";
 import { CourseLearnings } from "../_components/course-layout/course-learnings";
 import { CourseInfoBlockSidebar } from "../_components/course-layout/course-info-block-sidebar";
+import { Button } from "@/components/ui/button";
 
 export default function page({ params }: { params: { courseId: string } }) {
   return (
     <section className="h-screen">
       <div className="container px-4 mx-auto">
         <h1 className="text-4xl font-bold text-center py-5 md:py-10">
-          Create Course Layout Here
+          Design Your Course Layout Here
         </h1>
 
         <CourseLayoutHero courseId={params?.courseId} />
@@ -26,6 +27,9 @@ export default function page({ params }: { params: { courseId: string } }) {
           <div className="space-y-4">
             <h2 className="text-2xl font-bold">Course Content</h2>
             <CourseLessonsList courseId={params?.courseId} />
+            <div className="flex justify-center">
+              <Button>Generate Course</Button>
+            </div>
           </div>
         </div>
       </div>

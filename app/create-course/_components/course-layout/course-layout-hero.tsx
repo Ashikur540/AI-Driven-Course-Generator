@@ -7,6 +7,7 @@ import useCourseQuery from "@/hooks/query/useCourseQuery";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { EditCourseInfoModal } from "./edit-course-info-modal";
+import CourseThumbnailBlock from "./course-thumnail-upload-block";
 
 type CourseLayoutHeroProps = {
   courseId: string;
@@ -33,7 +34,11 @@ export const CourseLayoutHero = ({ courseId }: CourseLayoutHeroProps) => {
           </p>
           <Button>Start Course</Button>
         </div>
-        <Image src="/placeholder.png" alt="course" width={400} height={320} />
+        {/* <Image src="/placeholder.png" alt="course" width={400} height={320} /> */}
+
+        <div className="w-full md:w-1/2 flex justify-center">
+          <CourseThumbnailBlock />
+        </div>
       </div>
     </div>
   );

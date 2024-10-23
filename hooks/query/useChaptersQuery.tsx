@@ -8,6 +8,7 @@ import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { ObjectId } from "mongoose";
 
 export const CHAPTERS_QUERY_KEY = "chapters";
+// export const CHAPTER_QUERY_KEY = "chapter";
 
 export type ChapterRes = CourseChapter & { _id: ObjectId };
 
