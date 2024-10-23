@@ -3,7 +3,6 @@ import { z } from "zod";
 
 import { courseSchema } from "@/lib/validationSchemas";
 import { ObjectId } from "mongoose";
-import { CourseLayoutData } from "@/types/courses.types";
 
 export type CourseType = {
   title: z.infer<typeof courseSchema>["courseTitle"];
@@ -12,9 +11,10 @@ export type CourseType = {
   duration: string;
   level: z.infer<typeof courseSchema>["courseOptions"]["difficultyLevel"];
   chaptersNo: z.infer<typeof courseSchema>["courseOptions"]["chaptersNo"];
-  courseLayoutData: CourseLayoutData;
   videoIncluded: boolean;
   courseCreator: ObjectId;
+  learningOutcomes: string[];
+  requirements: string[];
 };
 
 const CourseSchema = new Schema<CourseType>(
@@ -25,8 +25,9 @@ const CourseSchema = new Schema<CourseType>(
     duration: { type: String, required: true },
     level: { type: String, required: true },
     chaptersNo: { type: Number, required: true },
-    courseLayoutData: { type: Object, required: true },
+    learningOutcomes: { type: [String], required: true },
     videoIncluded: { type: Boolean, required: true },
+    requirements: { type: [String], required: true },
     courseCreator: { type: Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

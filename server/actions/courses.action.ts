@@ -6,6 +6,7 @@ import Course, { CourseType } from "../model/course.model";
 import { auth } from "@clerk/nextjs/server";
 import User from "../model/user.modal";
 import connectToDB from "@/lib/dbconnect";
+import Chapter from "../model/chapter.model";
 import { CourseLayoutData } from "@/types/courses.types";
 
 export async function saveCourseToDB(
@@ -19,6 +20,8 @@ export async function saveCourseToDB(
     chapters,
     courseDuration,
     courseLevel,
+    learningOutcomes,
+    requirementList,
   } = courseLayoutData || {};
   try {
     await connectToDB();
@@ -40,11 +43,23 @@ export async function saveCourseToDB(
       difficultyLevel: courseLevel,
       description: courseDescription,
       level: courseLevel,
-      courseLayoutData: courseLayoutData,
       videoIncluded: data.courseOptions.includeVideo,
       courseCreator: user?._id,
+      learningOutcomes: learningOutcomes,
+      requirements: requirementList,
     } as CourseType);
-    //  also save the course to the users data
+
+    //  also save the chapters separately
+    if (chapters) {
+      for (const chapter of chapters) {
+        await Chapter.create({
+          ...chapter,
+          courseId: newCourse._id,
+        });
+      }
+    }
+
+    //  also save id the course to the users data for relation
     await User.findByIdAndUpdate(
       user._id,
       {

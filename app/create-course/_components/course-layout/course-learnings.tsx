@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import { ListItemWithCheckIcon } from "./list-item-with-check-icon";
-import useCourseQuery from "@/hooks/query/useCourse";
+import useCourseQuery from "@/hooks/query/useCourseQuery";
 
 export const CourseLearnings = ({ courseId }: { courseId: string }) => {
   const { data: courseData } = useCourseQuery(courseId);
-  const { learningOutcomes } = courseData?.courseLayoutData ?? {};
+  const { learningOutcomes } = courseData ?? {};
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold">What you will learn</h2>

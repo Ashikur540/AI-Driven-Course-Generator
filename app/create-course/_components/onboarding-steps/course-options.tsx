@@ -113,11 +113,16 @@ export const StepSelectCourseOptions = () => {
               );
             }}
           />
-          {errors.courseOptions?.duration && (
-            <p className="text-red-500 text-sm">
-              {errors.courseOptions.duration.message}
+          <div className="flex flex-col gap-1">
+            <p className="text-zinc-500 text-sm">
+              This will be an approximate estimate of the course time
             </p>
-          )}
+            {errors.courseOptions?.duration && (
+              <p className="text-red-500 text-sm">
+                {errors.courseOptions.duration.message}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="w-full flex flex-col">

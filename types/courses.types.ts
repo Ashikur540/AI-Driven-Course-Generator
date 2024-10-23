@@ -1,3 +1,4 @@
+import { ObjectId } from "mongoose";
 import { CourseOptions } from "./onboarding.types";
 
 export type CourseLayoutData = {
@@ -12,6 +13,7 @@ export type CourseLayoutData = {
 };
 
 export type CourseChapter = {
+  courseId: ObjectId; // reference to the course
   title: string;
   description: string;
   duration: string;

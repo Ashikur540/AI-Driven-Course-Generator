@@ -19,7 +19,7 @@ import { generateCourseGenAIPrompt } from "@/lib/utils";
 import { courseGenChatSession } from "@/configs/geminiAiConfig";
 import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
 import { courseSchema } from "@/lib/validationSchemas";
-import { saveCourseToDB } from "@/server/actions/courses";
+import { saveCourseToDB } from "@/server/actions/courses.action";
 import { useRouter } from "next/navigation";
 
 const onboardingInputsDefaultValues: OnboardingInputs = {
@@ -64,9 +64,7 @@ function CreateCourse() {
   const handleSubmitCreateCourse = handleSubmit(async (data) => {
     try {
       setIsLoadingCourseGen(true);
-
       const { success, data: courseData, error } = courseSchema.safeParse(data);
-      console.log("this is submit fn");
       if (!success) {
         console.log("result not success", error.flatten().fieldErrors);
 
@@ -130,7 +128,6 @@ function CreateCourse() {
       });
       return;
     }
-    console.log("next fn", currentStep);
 
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);

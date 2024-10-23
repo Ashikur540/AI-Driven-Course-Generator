@@ -1,4 +1,11 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { Loader2, PenBoxIcon } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+
 import { outfit } from "@/app/fonts";
 import FormInput from "@/components/form-input-elements/form-input";
 import FormTextAreaInput from "@/components/form-input-elements/form-textarea-input";
@@ -12,29 +19,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import useCourseQuery, { COURSE_QUERY_KEY } from "@/hooks/query/useCourseQuery";
 import {
-  courseBasicInfoSchema,
-  courseDesCharLimit,
-} from "@/lib/validationSchemas";
-import { updateCourseInfo } from "@/server/actions/courses.action";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
+  CHAPTERS_QUERY_KEY,
+  useChapterQuery,
+} from "@/hooks/query/useChaptersQuery";
 
-import { Loader2, PenBoxIcon } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { chapterInfoSchema, courseDesCharLimit } from "@/lib/validationSchemas";
+import { updateChapterInfo } from "@/server/actions/chapters.action";
+import { COURSE_QUERY_KEY } from "@/hooks/query/useCourseQuery";
 
-import toast from "react-hot-toast";
-
-type EditCourseInfoInput = {
-  courseTitle: string;
-  courseDescription: string;
+type EditChapterInfoInput = {
+  chapterTitle: string;
+  chapterDescription: string;
 };
 
-export function EditCourseInfoModal({ courseId }: { courseId: string }) {
-  const { data: courseDetails } = useCourseQuery(courseId);
+export function EditChapterInfoModal({ chapterId }: { chapterId: string }) {
+  const { data: chapterDetails, isLoading } = useChapterQuery(chapterId);
   const queryClient = useQueryClient();
   const [isSaveLoading, setIsSaveLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -43,18 +43,18 @@ export function EditCourseInfoModal({ courseId }: { courseId: string }) {
     handleSubmit,
     watch,
     formState: { isDirty },
-  } = useForm<EditCourseInfoInput>({
-    resolver: zodResolver(courseBasicInfoSchema),
+  } = useForm<EditChapterInfoInput>({
+    resolver: zodResolver(chapterInfoSchema),
     values: {
-      courseTitle: courseDetails?.title || "",
-      courseDescription: courseDetails?.description || "",
+      chapterTitle: chapterDetails?.title ?? "",
+      chapterDescription: chapterDetails?.description ?? "",
     },
     mode: "onChange",
   });
 
-  const onSubmit = async (data: EditCourseInfoInput) => {
+  const onSubmit = async (data: EditChapterInfoInput) => {
     setIsSaveLoading(true);
-    const { success } = courseBasicInfoSchema.safeParse(data);
+    const { success } = chapterInfoSchema.safeParse(data);
     if (!success) {
       toast.error("Please fill all the fields correctly");
       return;
@@ -62,14 +62,14 @@ export function EditCourseInfoModal({ courseId }: { courseId: string }) {
     console.log(data);
     // save course info to database
     try {
-      const updatedCourseInfo = await updateCourseInfo(courseId, {
-        title: data.courseTitle,
-        description: data.courseDescription,
+      const updatedCourseInfo = await updateChapterInfo(chapterId, {
+        title: data.chapterTitle,
+        description: data.chapterDescription,
       });
       console.log(updatedCourseInfo);
       toast.success("Course info updated successfully");
       await queryClient.invalidateQueries({
-        queryKey: [COURSE_QUERY_KEY, courseId],
+        queryKey: [CHAPTERS_QUERY_KEY, chapterId, COURSE_QUERY_KEY],
       });
       setIsOpen(false);
     } catch (error) {
@@ -83,46 +83,39 @@ export function EditCourseInfoModal({ courseId }: { courseId: string }) {
   return (
     <Dialog open={isOpen} onOpenChange={() => setIsOpen((prev) => !prev)}>
       <DialogTrigger asChild>
-        {/* <Button variant="outline" size="icon" className="inline"> */}
         <PenBoxIcon className="h-4 w-4 inline-block ml-2 cursor-pointer text-black" />
-        {/* </Button> */}
       </DialogTrigger>
       <DialogContent
         className={`sm:max-w-[425px] lg:max-w-[600px] ${outfit.className}`}
       >
         <DialogHeader>
-          <DialogTitle>Edit Course Info</DialogTitle>
-          {/* <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription> */}
+          <DialogTitle>Edit Chapter Info</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col justify-start gap-1 lg:gap-2 py-4">
-          {/* <div className="grid grid-cols-4 items-start gap-4"> */}
           <FormInput
-            name="courseTitle"
+            name="chapterTitle"
             control={control}
             inputProps={{
-              label: "Course Title",
+              label: "Chapter Title",
               className: "col-span-3",
               type: "text",
+              disabled: isLoading,
             }}
           />
-          {/* </div> */}
-          {/* <div className="grid grid-cols-4 items-start gap-4"> */}
           <div className="w-full">
             <FormTextAreaInput
-              name="courseDescription"
+              name="chapterDescription"
               control={control}
               inputProps={{
-                label: "Course Description",
+                label: "Chapter Description",
                 className: "col-span-3",
+                disabled: isLoading,
               }}
             />
             <p className="text-sm text-gray-500">
-              {`${watch("courseDescription").length} / ${courseDesCharLimit}`}
+              {`${watch("chapterDescription").length} / ${courseDesCharLimit}`}
             </p>
           </div>
-          {/* </div> */}
         </div>
         <DialogFooter>
           <DialogClose asChild>

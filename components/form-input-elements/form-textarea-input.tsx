@@ -19,7 +19,6 @@ type FormTextAreaInputProps<T extends FieldValues> = UseControllerProps<T> & {
     className?: string;
     id?: string;
     required?: boolean;
-    type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   };
 };
 

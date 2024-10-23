@@ -3,15 +3,14 @@
 import React from "react";
 
 import { CourseChapterListCard } from "./course-chapter-list-card";
-import { CourseChapter } from "@/types/courses.types";
-import useCourseQuery from "@/hooks/query/useCourse";
+import { ChapterRes, useChaptersQuery } from "@/hooks/query/useChaptersQuery";
 
 export const CourseLessonsList = ({ courseId }: { courseId: string }) => {
-  const { data: courseData } = useCourseQuery(courseId);
-  const { chapters } = courseData?.courseLayoutData ?? {};
+  const { data: chaptersData } = useChaptersQuery(courseId);
+
   return (
     <div className="flex flex-col gap-5 justify-start">
-      {chapters?.map((chapter: CourseChapter, index: number) => (
+      {chaptersData?.map((chapter: ChapterRes, index: number) => (
         <CourseChapterListCard key={index} chapter={chapter} index={index} />
       ))}
     </div>

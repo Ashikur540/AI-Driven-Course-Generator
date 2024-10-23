@@ -1,6 +1,6 @@
 // This provides hooks to get course data
 // "use client";
-import { getCourseById } from "@/server/actions/courses";
+import { getCourseById } from "@/server/actions/courses.action";
 import { CourseType } from "@/server/model/course.model";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 

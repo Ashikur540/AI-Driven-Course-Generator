@@ -7,13 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CourseChapter } from "@/types/courses.types";
+
+import { EditChapterInfoModal } from "./edit-chapter-info-modal";
+import { ChapterRes } from "@/hooks/query/useChaptersQuery";
 
 export const CourseChapterListCard = ({
   chapter,
   index,
 }: {
-  chapter: CourseChapter;
+  chapter: ChapterRes; // its the response type form mongodb database
   index: number;
 }) => {
   return (
@@ -23,7 +25,10 @@ export const CourseChapterListCard = ({
           <p className="text-sm">{index + 1}</p>
         </div>
         <div className="flex flex-col gap-2 justify-start">
-          <CardTitle>{chapter.title}</CardTitle>
+          <CardTitle>
+            {chapter.title}{" "}
+            <EditChapterInfoModal chapterId={String(chapter?._id)} />
+          </CardTitle>
           <CardDescription className="text-sm text-zinc-500 mb-2">
             <p> {chapter.description}</p>
             <p className="text-sm text-zinc-500 flex items-center gap-2 mt-2">

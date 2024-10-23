@@ -5,12 +5,11 @@ import { Book, ChartBar, Clock, Globe, Share2, Video } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { CourseInfoBlockWithIcon } from "./course-info-block-with-icon";
-import useCourseQuery from "@/hooks/query/useCourse";
+import useCourseQuery from "@/hooks/query/useCourseQuery";
 
 export const CourseInfoBlockSidebar = ({ courseId }: { courseId: string }) => {
   const { data: courseData } = useCourseQuery(courseId);
-  const { chapters, courseDuration, courseLevel } =
-    courseData?.courseLayoutData ?? {};
+  const { chaptersNo, duration, level } = courseData ?? {};
 
   return (
     <Card className="bg-gray-50 p-4 rounded-md max-w-sm w-full">
@@ -21,17 +20,17 @@ export const CourseInfoBlockSidebar = ({ courseId }: { courseId: string }) => {
         <CourseInfoBlockWithIcon
           icon={<Book size={18} />}
           text="Chapters"
-          value={`${chapters?.length ?? ""}`}
+          value={`${chaptersNo ?? ""}`}
         />
         <CourseInfoBlockWithIcon
           icon={<Clock size={18} />}
           text="Duration"
-          value={courseDuration ?? ""}
+          value={duration ?? ""}
         />
         <CourseInfoBlockWithIcon
           icon={<ChartBar size={18} />}
           text="Level"
-          value={courseLevel ?? ""}
+          value={level ?? ""}
         />
         <CourseInfoBlockWithIcon
           icon={<Video size={18} />}

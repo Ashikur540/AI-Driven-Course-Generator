@@ -61,3 +61,14 @@ export const courseBasicInfoSchema = z.object({
   courseTitle: courseSchema.shape.courseTitle,
   courseDescription: courseSchema.shape.courseDescription,
 });
+export const chapterInfoSchema = z.object({
+  chapterTitle: z
+    .string()
+    .trim()
+    .min(8, { message: "Chapter title should be minimum 8 characters" }),
+  chapterDescription: z
+    .string()
+    .min(40, {
+      message: "Chapter description should be minimum 40 characters",
+    }),
+});
