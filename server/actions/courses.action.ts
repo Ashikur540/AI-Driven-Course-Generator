@@ -47,6 +47,7 @@ export async function saveCourseToDB(
       courseCreator: user?._id,
       learningOutcomes: learningOutcomes,
       requirements: requirementList,
+      thumbnailImage: "",
     } as CourseType);
 
     //  also save the chapters separately

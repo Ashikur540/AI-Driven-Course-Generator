@@ -1,19 +1,23 @@
 "use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+
 import useCourseQuery from "@/hooks/query/useCourseQuery";
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { EditCourseInfoModal } from "./edit-course-info-modal";
-import CourseThumbnailBlock from "./course-thumnail-upload-block";
+import { CourseThumbnailBlock } from "./course-thumbnail-upload-block";
 
 type CourseLayoutHeroProps = {
   courseId: string;
+  // setImageFile: (file: File | null) => void;
 };
 
-export const CourseLayoutHero = ({ courseId }: CourseLayoutHeroProps) => {
+export const CourseLayoutHero = ({
+  courseId,
+}: // setImageFile,
+CourseLayoutHeroProps) => {
   const { data: courseData } = useCourseQuery(courseId);
   console.log(courseData);
   const { title, category, description } = courseData ?? {};

@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 export const courseDesCharLimit = 460;
@@ -66,9 +67,32 @@ export const chapterInfoSchema = z.object({
     .string()
     .trim()
     .min(8, { message: "Chapter title should be minimum 8 characters" }),
-  chapterDescription: z
-    .string()
-    .min(40, {
-      message: "Chapter description should be minimum 40 characters",
+  chapterDescription: z.string().min(40, {
+    message: "Chapter description should be minimum 40 characters",
+  }),
+});
+
+export const courseImgFormSchema = z.object({
+  thumbnail: z
+    .any()
+    .optional()
+    .transform((val) => {
+      if (val instanceof File) {
+        if (val.size > 2 * 1024 * 1024) {
+          toast.error("File size must be less than 2MB");
+          return;
+        }
+        if (
+          !["image/jpeg", "image/jpg", "image/png", "image/webp"].includes(
+            val.type
+          )
+        ) {
+          toast.error("Only .jpg, .jpeg, .png and .webp files are accepted");
+          return;
+        }
+        return val;
+      }
+      return undefined;
     }),
 });
+// / either a file or undefined

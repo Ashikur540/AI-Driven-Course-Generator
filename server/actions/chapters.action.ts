@@ -10,6 +10,11 @@ export async function getChaptersById(
   courseId: string
 ): Promise<CourseChapter[]> {
   await connectToDB();
+  const { userId, redirectToSignIn } = auth();
+  if (!userId) {
+    redirectToSignIn();
+    // throw new Error("Unauthorized");
+  }
   const chapters = await Chapter.find({ courseId });
   return JSON.parse(JSON.stringify(chapters));
 }
@@ -18,6 +23,11 @@ export async function getChapterById(
   chapterId: string
 ): Promise<CourseChapter> {
   await connectToDB();
+  const { userId, redirectToSignIn } = auth();
+  if (!userId) {
+    redirectToSignIn();
+    // throw new Error("Unauthorized");
+  }
   const chapter = await Chapter.findOne({ _id: chapterId });
   return JSON.parse(JSON.stringify(chapter));
 }
@@ -29,8 +39,11 @@ export async function updateChapterInfo(
 ) {
   await connectToDB();
   //  check if logged in or not
-  const { userId: clerkId } = auth();
-  if (!clerkId) throw new Error("Unauthorized");
+  const { userId, redirectToSignIn } = auth();
+  if (!userId) {
+    redirectToSignIn();
+    // throw new Error("Unauthorized");
+  }
 
   //  check if chapter exists
   const chapter = await Chapter.findById(chapterId);

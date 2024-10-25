@@ -15,8 +15,8 @@ import { StepCourseTitleAndDescription } from "./_components/onboarding-steps/co
 import { OnboardingInputs } from "@/types/onboarding.types";
 import { StepSelectCourseOptions } from "./_components/onboarding-steps/course-options";
 
-import { generateCourseGenAIPrompt } from "@/lib/utils";
-import { courseGenChatSession } from "@/configs/geminiAiConfig";
+import { getCourseGenAIPrompt } from "@/lib/utils";
+import { courseContentGenChatSession } from "@/configs/geminiAiConfig";
 import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
 import { courseSchema } from "@/lib/validationSchemas";
 import { saveCourseToDB } from "@/server/actions/courses.action";
@@ -73,7 +73,7 @@ function CreateCourse() {
         return;
       }
 
-      const prompt = generateCourseGenAIPrompt({
+      const prompt = getCourseGenAIPrompt({
         chaptersNo: courseData.courseOptions.chaptersNo,
         courseCategory: courseData.courseCategory,
         courseDescription: courseData.courseDescription ?? "",
@@ -110,7 +110,7 @@ function CreateCourse() {
 
   const handleGenerateCourseLayout = async (prompt: string) => {
     try {
-      const result = await courseGenChatSession.sendMessage(prompt);
+      const result = await courseContentGenChatSession.sendMessage(prompt);
       return JSON.parse(result.response.text());
     } catch (error) {
       console.error("error", error);

@@ -15,6 +15,7 @@ export type CourseType = {
   courseCreator: ObjectId;
   learningOutcomes: string[];
   requirements: string[];
+  thumbnailImage?: string;
 };
 
 const CourseSchema = new Schema<CourseType>(
@@ -29,6 +30,7 @@ const CourseSchema = new Schema<CourseType>(
     videoIncluded: { type: Boolean, required: true },
     requirements: { type: [String], required: true },
     courseCreator: { type: Schema.Types.ObjectId, ref: "User" },
+    thumbnailImage: { type: String, default: "" },
   },
   { timestamps: true }
 );

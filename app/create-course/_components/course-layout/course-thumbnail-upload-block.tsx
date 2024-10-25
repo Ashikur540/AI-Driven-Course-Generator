@@ -1,34 +1,48 @@
 import { Image, PenBox, Trash } from "lucide-react";
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
+import { useFormContext } from "react-hook-form";
+import { CourseImgData } from "../../providers/course-Image-form-provider";
 
-const CourseThumbnailBlock = () => {
-  const [imageLink, setImageLink] = useState("");
+export function CourseThumbnailBlock() {
+  const [thumbnailPreview, setThumbnailPreview] = useState("");
+  const {
+    register,
+    formState: { errors },
+    setValue,
+  } = useFormContext<CourseImgData>();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageURL = URL.createObjectURL(file);
+      setThumbnailPreview(imageURL);
+      setValue("thumbnail", file);
+    }
+  };
 
   const handleUploadImageClick = () => {
     document.getElementById("course-thumbnail")?.click();
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const file = e.target.files?.[0];
-    console.log(file);
-    if (file) {
-      const imageURL = URL.createObjectURL(file);
-      setImageLink(imageURL);
-    }
+  const handleRemoveImage = () => {
+    setThumbnailPreview("");
+    setValue("thumbnail", undefined);
   };
-
+  console.log("errors", errors);
   return (
     <>
       <input
         id="course-thumbnail"
-        name="file-upload"
+        {...register("thumbnail")}
         type="file"
         className="hidden"
-        accept=".jpg,.png,.jpeg"
+        accept=".jpg,.jpeg,.png,.webp"
         onChange={handleFileChange}
       />
-      {imageLink === "" ? (
+      {errors.thumbnail && (
+        <p className="text-red-500 text-sm">{errors.thumbnail.message}</p>
+      )}
+      {thumbnailPreview === "" ? (
         <div className="relative my-6 w-[60%]">
           <label
             onClick={handleUploadImageClick}
@@ -42,17 +56,14 @@ const CourseThumbnailBlock = () => {
                 Upload media
                 <span className="text-slate-500"> or drag and drop </span>
               </span>
-              <span className="text-slate-600">
-                {" "}
-                PNG, JPG or GIF up to 10MB{" "}
-              </span>
+              <span className="text-slate-600">PNG, JPG, WEBP up to 2MB</span>
             </p>
           </label>
         </div>
       ) : (
         <div className="relative w-[80%] h-[300px]">
           <img
-            src={imageLink}
+            src={thumbnailPreview}
             alt="image"
             className="w-full h-full object-cover rounded-lg"
           />
@@ -60,7 +71,7 @@ const CourseThumbnailBlock = () => {
             <button type="button" onClick={handleUploadImageClick}>
               <PenBox />
             </button>
-            <button type="button" onClick={() => setImageLink("")}>
+            <button type="button" onClick={handleRemoveImage}>
               <Trash />
             </button>
           </div>
@@ -68,6 +79,4 @@ const CourseThumbnailBlock = () => {
       )}
     </>
   );
-};
-
-export default CourseThumbnailBlock;
+}
