@@ -51,7 +51,7 @@ function CreateCourse() {
   const {
     watch,
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = formMethods;
 
   const {
@@ -120,14 +120,14 @@ function CreateCourse() {
 
   const handleNextStep = useCallback(() => {
     // Check for errors
-    const hasErrors = Object.keys(errors).length > 0;
-    if (hasErrors) {
-      console.log("hasErrors", hasErrors);
-      toast.error("Please check the form fields and try again.", {
-        position: "bottom-center",
-      });
-      return;
-    }
+    // const hasErrors = Object.keys(errors).length > 0;
+    // if (hasErrors) {
+    //   console.log("hasErrors", hasErrors);
+    //   toast.error("Please check the form fields and try again.", {
+    //     position: "bottom-center",
+    //   });
+    //   return;
+    // }
 
     if (currentStep < onboardingSteps.length) {
       setCurrentStep((prev) => prev + 1);
@@ -142,7 +142,7 @@ function CreateCourse() {
     } else if (currentStep === onboardingSteps.length) {
       handleSubmitCreateCourse();
     }
-  }, [currentStep, onboardingSteps.length, handleSubmitCreateCourse, errors]);
+  }, [currentStep, onboardingSteps.length, handleSubmitCreateCourse]);
 
   const handlePreviousStep = useCallback(() => {
     if (currentStep > 1) {

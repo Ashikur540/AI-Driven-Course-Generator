@@ -28,7 +28,7 @@ export function CourseThumbnailBlock() {
     setThumbnailPreview("");
     setValue("thumbnail", undefined);
   };
-  console.log("errors", errors);
+
   return (
     <>
       <input

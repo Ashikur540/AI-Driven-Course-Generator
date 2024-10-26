@@ -8,6 +8,8 @@ const ChapterSchema = new Schema<CourseChapter>(
     description: { type: String, required: true },
     duration: { type: String, required: true },
     courseId: { type: String, ref: "Course", required: true },
+    content: { type: String, default: "" },
+    ytSearchQuery: { type: String, required: true },
   },
   { timestamps: true }
 );

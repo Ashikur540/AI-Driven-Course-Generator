@@ -17,4 +17,6 @@ export type CourseChapter = {
   title: string;
   description: string;
   duration: string;
+  content: string;
+  ytSearchQuery: string;
 };

@@ -7,7 +7,7 @@ import { auth } from "@clerk/nextjs/server";
 import User from "../model/user.modal";
 import connectToDB from "@/lib/dbconnect";
 import Chapter from "../model/chapter.model";
-import { CourseLayoutData } from "@/types/courses.types";
+import { CourseChapter, CourseLayoutData } from "@/types/courses.types";
 
 export async function saveCourseToDB(
   courseInputs: CourseInputs,
@@ -53,10 +53,15 @@ export async function saveCourseToDB(
     //  also save the chapters separately
     if (chapters) {
       for (const chapter of chapters) {
-        await Chapter.create({
-          ...chapter,
-          courseId: newCourse._id,
-        });
+        const chapterData: CourseChapter = {
+          title: chapter.title,
+          description: chapter.description,
+          duration: chapter.duration,
+          ytSearchQuery: chapter.ytSearchQuery,
+          content: chapter.content,
+          courseId: newCourse?._id,
+        };
+        await Chapter.create(chapterData);
       }
     }
 

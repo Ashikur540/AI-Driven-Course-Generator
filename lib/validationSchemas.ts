@@ -43,7 +43,7 @@ export const courseSchema = z.object({
       }),
     chaptersNo: z
       .number()
-      .max(100, { message: "No of chapters must be at most 100" })
+      .max(20, { message: "No of chapters must be at most 20" })
       .min(6, { message: "No of chapters must be at least 6" }),
 
     includeVideo: z.boolean(),

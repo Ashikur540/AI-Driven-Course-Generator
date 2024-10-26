@@ -19,7 +19,6 @@ export const CourseLayoutHero = ({
 }: // setImageFile,
 CourseLayoutHeroProps) => {
   const { data: courseData } = useCourseQuery(courseId);
-  console.log(courseData);
   const { title, category, description } = courseData ?? {};
   return (
     <div className="bg-zinc-100 md:max-w-screen-lg xl:max-w-screen-2xl mx-auto p-6 md:p-8 xl:p-12 mb-10">
