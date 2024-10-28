@@ -4,6 +4,9 @@ export async function getVideoContentID(query: string): Promise<string> {
     const response = await fetch(url);
     const data = await response.json();
     console.log(data);
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
     const videoID = data?.items[0]?.id?.videoId;
     return videoID ?? "";
   } catch (error) {

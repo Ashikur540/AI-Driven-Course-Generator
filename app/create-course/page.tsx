@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 
@@ -17,10 +18,9 @@ import { StepSelectCourseOptions } from "./_components/onboarding-steps/course-o
 
 import { getCourseGenAIPrompt } from "@/lib/utils";
 import { courseContentGenChatSession } from "@/configs/geminiAiConfig";
-import { CourseGenLoadingModal } from "./_components/course-gen-loading-modal";
+import { CourseLayoutGenLoadingModal } from "./_components/course-layout-gen-loading-modal";
 import { courseSchema } from "@/lib/validationSchemas";
 import { saveCourseToDB } from "@/server/actions/courses.action";
-import { useRouter } from "next/navigation";
 
 const onboardingInputsDefaultValues: OnboardingInputs = {
   courseCategory: "",
@@ -226,7 +226,7 @@ function CreateCourse() {
           </div>
         </div>
       </div>
-      <CourseGenLoadingModal isLoadingCourseGen={isLoadingCourseGen} />
+      <CourseLayoutGenLoadingModal isLoadingCourseGen={isLoadingCourseGen} />
     </div>
   );
 }

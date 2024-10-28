@@ -50,3 +50,35 @@ export function getChapterContentAIPrompt({
 }) {
   return `Explain the concept on topic: "${topicName}", chapter: "${chapterName}" with detailed explanation on given chapter and return a json response with an object field content where content is string type but written in markdown style. Also include code example or diagram example if applicable. Don't include the chapterName or the topicName into the markdown response. Just provide the actual content. For more context on the topic you can follow this description: "${topicDescription}" to improve the content quality`;
 }
+
+export function copyToClipboard(text: string) {
+  if (!navigator.clipboard) {
+    // Fallback for older browsers
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed"; // Prevent scrolling to bottom of page in older browsers
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      document.execCommand("copy");
+      console.log("Fallback: Text copied to clipboard");
+    } catch (err) {
+      console.error("Fallback: Unable to copy", err);
+    }
+
+    document.body.removeChild(textArea);
+    return;
+  }
+
+  // Modern clipboard API
+  navigator.clipboard.writeText(text).then(
+    () => {
+      console.log("Text successfully copied to clipboard");
+    },
+    (err) => {
+      console.error("Error in copying text: ", err);
+    }
+  );
+}
