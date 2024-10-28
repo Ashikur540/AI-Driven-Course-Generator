@@ -37,25 +37,31 @@ export async function updateChapterInfo(
   chapterId: string,
   chapterInfo: Partial<ChapterRes>
 ) {
-  await connectToDB();
-  //  check if logged in or not
-  const { userId, redirectToSignIn } = auth();
-  if (!userId) {
-    redirectToSignIn();
-    // throw new Error("Unauthorized");
-  }
-
-  //  check if chapter exists
-  const chapter = await Chapter.findById(chapterId);
-  if (!chapter) throw new Error("Chapter not found!");
-
-  // update the chapter info
-  const updatedChapter = await Chapter.findByIdAndUpdate(
-    chapterId,
-    chapterInfo,
-    {
-      new: true,
+  try {
+    await connectToDB();
+    //  check if logged in or not
+    const { userId, redirectToSignIn } = auth();
+    if (!userId) {
+      redirectToSignIn();
+      // throw new Error("Unauthorized");
     }
-  );
-  return JSON.parse(JSON.stringify(updatedChapter));
+
+    //  check if chapter exists
+    const chapter = await Chapter.findById(chapterId);
+    if (!chapter) throw new Error("Chapter not found!");
+
+    // update the chapter info
+    const updatedChapter = await Chapter.findByIdAndUpdate(
+      chapterId,
+      chapterInfo,
+      {
+        new: true,
+      }
+    );
+    return JSON.parse(JSON.stringify(updatedChapter));
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+  }
 }

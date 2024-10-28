@@ -10,6 +10,7 @@ const ChapterSchema = new Schema<CourseChapter>(
     courseId: { type: String, ref: "Course", required: true },
     content: { type: String, default: "" },
     ytSearchQuery: { type: String, required: true },
+    ytVideoId: { type: String },
   },
   { timestamps: true }
 );

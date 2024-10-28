@@ -19,4 +19,5 @@ export type CourseChapter = {
   duration: string;
   content: string;
   ytSearchQuery: string;
+  ytVideoId: string;
 };

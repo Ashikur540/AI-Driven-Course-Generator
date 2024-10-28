@@ -12,6 +12,9 @@ import useCourseQuery from "@/hooks/query/useCourseQuery";
 import { courseImgFormSchema } from "@/lib/validationSchemas";
 import { chapterContentGenSession } from "@/configs/geminiAiConfig";
 import { CourseGenLoadingModal } from "./course-gen-loading-modal";
+import { updateChapterInfo } from "@/server/actions/chapters.action";
+import { getVideoContentID } from "@/configs/youtubeApiReq";
+import { updateCourseInfo } from "@/server/actions/courses.action";
 export function GenerateCourseButton({ courseId }: { courseId: string }) {
   const { data: courseData } = useCourseQuery(courseId);
   const { data: allChapters } = useChaptersQuery(courseId);
@@ -27,7 +30,7 @@ export function GenerateCourseButton({ courseId }: { courseId: string }) {
   } = useFormContext<CourseImgData>();
   const onSubmit = async (data: CourseImgData) => {
     setIsLoadingCourseGen(true); // Start loading state here
-
+    let imageUrl = "";
     try {
       console.log("Course data:", data);
 
@@ -45,7 +48,7 @@ export function GenerateCourseButton({ courseId }: { courseId: string }) {
 
         const formData = new FormData();
         formData.append("image", data.thumbnail);
-        const imageUrl = await getImageUrl(formData);
+        imageUrl = await getImageUrl(formData);
         console.log("Course data with image URL:", { ...data, imageUrl });
       }
 
@@ -56,10 +59,26 @@ export function GenerateCourseButton({ courseId }: { courseId: string }) {
           topicDescription: chapter.description,
           topicName: courseData?.title ?? "",
         });
-        // const content = await handleGenerateChapterContent(
-        //   chapterContentGenPrompt
-        // );
-        // console.log("Chapter content:", content);
+        // generate chapter text content
+        const content = await handleGenerateChapterContent(
+          chapterContentGenPrompt
+        );
+
+        // generate video Content
+        const youtubeVideoId = await getVideoContentID(chapter.title);
+        console.log(youtubeVideoId);
+
+        //  update chapter info with content and video
+        updateChapterInfo(String(chapter?._id), {
+          content,
+          ytVideoId: youtubeVideoId,
+        });
+
+        //  if user upload thumbnail then save it
+        if (imageUrl.length > 0) {
+          updateCourseInfo(courseId, { thumbnailImage: imageUrl });
+        }
+        console.log("Chapter content:", content);
       }
     } catch (error) {
       console.error("Error generating course:", error);
@@ -69,14 +88,14 @@ export function GenerateCourseButton({ courseId }: { courseId: string }) {
     }
   };
 
-  // const handleGenerateChapterContent = async (prompt: string) => {
-  //   try {
-  //     const result = await chapterContentGenSession.sendMessage(prompt);
-  //     return result.response.text();
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
+  const handleGenerateChapterContent = async (prompt: string) => {
+    try {
+      const result = await chapterContentGenSession.sendMessage(prompt);
+      return result.response.text();
+    } catch (error) {
+      throw error;
+    }
+  };
 
   return (
     <>
