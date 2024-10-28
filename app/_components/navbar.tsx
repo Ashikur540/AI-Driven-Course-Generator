@@ -166,7 +166,7 @@ export const Navbar = () => {
           <div className="flex items-center justify-between py-3 md:py-5 md:block">
             <a href="#">
               <img
-                src="https://www.floatui.com/logo.svg"
+                src="/logoipsum-330.svg"
                 width={120}
                 height={50}
                 alt="Float UI logo"
