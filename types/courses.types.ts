@@ -1,5 +1,6 @@
 import { ObjectId } from "mongoose";
 import { CourseOptions } from "./onboarding.types";
+import { CourseType } from "@/server/model/course.model";
 
 export type CourseLayoutData = {
   courseTitle: string;
@@ -20,4 +21,10 @@ export type CourseChapter = {
   content: string;
   ytSearchQuery: string;
   ytVideoId?: string;
+};
+
+export type CourseRes = CourseType & {
+  _id: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 };

@@ -9,7 +9,7 @@ import React from "react";
 export const DashboardHeader = () => {
   const { user } = useUser();
   return (
-    <div className="flex justify-between items-center gap-8">
+    <div className="flex flex-wrap justify-between items-center gap-8">
       <div>
         <h1 className="text-2xl font-medium">
           Hello, <b>{user?.fullName}</b>

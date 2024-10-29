@@ -106,3 +106,32 @@ export async function updateCourseInfo(
   });
   return JSON.parse(JSON.stringify(updatedCourse));
 }
+
+// get users created all the courses
+export async function getCoursesByUserId() {
+  try {
+    await connectToDB();
+    const { userId: clerkId, redirectToSignIn } = auth();
+    if (!clerkId) redirectToSignIn();
+    // get userID from database
+    const userId = await User.findOne({ clerkId }).select("_id");
+    const course = await Course.find({ courseCreator: userId });
+    return course;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// search API for courses
+
+export async function searchCourses(searchQuery: string) {
+  await connectToDB();
+  // check if logged in or not
+  const { userId: clerkId, redirectToSignIn } = auth();
+  if (!clerkId) redirectToSignIn();
+
+  const courses = await Course.find({
+    $text: { $search: searchQuery },
+  });
+  return courses;
+}
