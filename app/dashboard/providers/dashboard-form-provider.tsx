@@ -4,21 +4,26 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const courseImgFormSchema = z.object({
-  queryText: z.string().trim(),
+export const dashboardFormSchema = z.object({
+  queryText: z.string().trim().optional(),
+  sortBy: z
+    .enum([
+      // "recentlyAccessed",
+      "recentlyCreated",
+      "AscendingOrder",
+      "DescendingOrder",
+    ])
+    .optional(),
 });
 
-export type DashboardFormInputType = {
-  searchText: string;
-};
-
+export type DashboardFormInputType = z.infer<typeof dashboardFormSchema>;
 export default function DashboardFormProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const methods = useForm<DashboardFormInputType>({
-    resolver: zodResolver(courseImgFormSchema),
+    resolver: zodResolver(dashboardFormSchema),
     mode: "onChange",
   });
 

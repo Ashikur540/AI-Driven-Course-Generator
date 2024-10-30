@@ -1,11 +1,12 @@
 // This provides hooks to get course data
 // "use client";
+
 import {
   getCourseById,
   getCoursesByUserId,
 } from "@/server/actions/courses.action";
 import { CourseType } from "@/server/model/course.model";
-import { CourseRes } from "@/types/courses.types";
+import { CourseRes, GetCourseByUserIDParams } from "@/types/courses.types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 
 export const COURSE_QUERY_KEY = "courses";
@@ -19,9 +20,12 @@ export default function useCourseQuery(
   });
 }
 
-export function useCoursesOfUserQuery(): UseQueryResult<CourseRes[]> {
+export function useCoursesOfUserQuery({
+  queryText,
+  sortBy,
+}: GetCourseByUserIDParams): UseQueryResult<CourseRes[]> {
   return useQuery({
-    queryKey: [COURSE_QUERY_KEY],
-    queryFn: () => getCoursesByUserId(),
+    queryKey: [COURSE_QUERY_KEY, queryText, sortBy],
+    queryFn: () => getCoursesByUserId({ queryText, sortBy }),
   });
 }

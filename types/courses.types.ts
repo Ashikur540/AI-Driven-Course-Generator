@@ -1,6 +1,8 @@
 import { ObjectId } from "mongoose";
 import { CourseOptions } from "./onboarding.types";
 import { CourseType } from "@/server/model/course.model";
+import { z } from "zod";
+import { dashboardFormSchema } from "@/app/dashboard/providers/dashboard-form-provider";
 
 export type CourseLayoutData = {
   courseTitle: string;
@@ -27,4 +29,9 @@ export type CourseRes = CourseType & {
   _id: ObjectId;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type GetCourseByUserIDParams = {
+  queryText: z.infer<typeof dashboardFormSchema>["queryText"];
+  sortBy: z.infer<typeof dashboardFormSchema>["sortBy"];
 };

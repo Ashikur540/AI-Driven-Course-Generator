@@ -1,5 +1,7 @@
 "use server";
 
+import { SortOrder } from "mongoose";
+
 import { courseSchema } from "@/lib/validationSchemas";
 import { CourseInputs } from "@/types/onboarding.types";
 import Course, { CourseType } from "../model/course.model";
@@ -7,7 +9,11 @@ import { auth } from "@clerk/nextjs/server";
 import User from "../model/user.modal";
 import connectToDB from "@/lib/dbconnect";
 import Chapter from "../model/chapter.model";
-import { CourseChapter, CourseLayoutData } from "@/types/courses.types";
+import {
+  CourseChapter,
+  CourseLayoutData,
+  GetCourseByUserIDParams,
+} from "@/types/courses.types";
 
 export async function saveCourseToDB(
   courseInputs: CourseInputs,
@@ -108,30 +114,35 @@ export async function updateCourseInfo(
 }
 
 // get users created all the courses
-export async function getCoursesByUserId() {
+export async function getCoursesByUserId({
+  queryText,
+  sortBy = "recentlyCreated",
+}: GetCourseByUserIDParams) {
   try {
     await connectToDB();
     const { userId: clerkId, redirectToSignIn } = auth();
     if (!clerkId) redirectToSignIn();
     // get userID from database
     const userId = await User.findOne({ clerkId }).select("_id");
-    const course = await Course.find({ courseCreator: userId });
+    const dbQuery = {
+      courseCreator: userId,
+      ...(queryText?.trim().length && {
+        $or: [
+          { title: { $regex: queryText, $options: "i" } },
+          { description: { $regex: queryText, $options: "i" } },
+        ],
+      }),
+    };
+    const sortOptions: Record<typeof sortBy, { [key: string]: SortOrder }> = {
+      // recentlyAccessed: { lastAccessed: -1 },
+      recentlyCreated: { createdAt: -1 },
+      AscendingOrder: { title: "ascending" },
+      DescendingOrder: { title: "descending" },
+    };
+
+    const course = await Course.find(dbQuery).sort(sortOptions[sortBy]);
     return course;
   } catch (error) {
     throw error;
   }
-}
-
-// search API for courses
-
-export async function searchCourses(searchQuery: string) {
-  await connectToDB();
-  // check if logged in or not
-  const { userId: clerkId, redirectToSignIn } = auth();
-  if (!clerkId) redirectToSignIn();
-
-  const courses = await Course.find({
-    $text: { $search: searchQuery },
-  });
-  return courses;
 }
