@@ -7,6 +7,8 @@ import React from "react";
 import useCourseQuery from "@/hooks/query/useCourseQuery";
 import { copyToClipboard } from "@/lib/utils";
 import { ConfettiExplosion } from "@/components/confetti";
+import toast from "react-hot-toast";
+import Link from "next/link";
 
 export default function CourseCreationFinish({
   params,
@@ -58,15 +60,17 @@ export default function CourseCreationFinish({
                 <span className="text-blue-600 font-medium">{category}</span>
               </div>
 
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors">
-                Start
-              </button>
+              <Link href={`/dashboard/courses/${params?.courseId}`}>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition-colors">
+                  Start
+                </button>
+              </Link>
             </div>
 
             {/* Course Image Section */}
             <div className="relative w-full md:w-1/2 h-64 md:h-auto">
               <Image
-                src={thumbnailImage ?? ""}
+                src={thumbnailImage || "/course-image-placeholder.svg"}
                 alt="Course Preview"
                 layout="fill"
                 className="object-cover"
@@ -87,7 +91,12 @@ export default function CourseCreationFinish({
             />
             <ClipboardCopy
               className="w-5 h-5 text-gray-600 cursor-pointer ml-2"
-              onClick={() => copyToClipboard(courseShareURL)}
+              onClick={() => {
+                copyToClipboard(courseShareURL);
+                toast.success("Link Copied to clipboard", {
+                  position: "bottom-center",
+                });
+              }}
             />
           </div>
         </div>

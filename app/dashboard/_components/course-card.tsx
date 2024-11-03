@@ -1,12 +1,17 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
+import { useChaptersQuery } from "@/hooks/query/useChaptersQuery";
 import { CourseRes } from "@/types/courses.types";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
 export function CourseCard({ course }: { course: CourseRes }) {
-  const { category, title, createdAt, level, thumbnailImage, _id } =
-    course ?? {};
+  const { category, title, createdAt, thumbnailImage, _id } = course ?? {};
+
+  const { data: chapters } = useChaptersQuery(String(_id));
+
   return (
     <>
       {/*<!-- Component: Basic image card --> */}
@@ -27,7 +32,11 @@ export function CourseCard({ course }: { course: CourseRes }) {
             {category}
           </Badge>
 
-          <Link href={`/dashboard/courses/${_id}`}>
+          <Link
+            href={`/dashboard/courses/${_id}/chapter/${
+              chapters && chapters[0]?._id
+            }`}
+          >
             <h3 className="text-xl font-medium text-slate-700">{title}</h3>
           </Link>
           <p className="text-sm text-slate-400">
