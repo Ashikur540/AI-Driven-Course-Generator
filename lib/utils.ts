@@ -48,7 +48,8 @@ export function getChapterContentAIPrompt({
   chapterName: string;
   topicDescription: string;
 }) {
-  return `Explain the concept on topic: "${topicName}", chapter: "${chapterName}" with detailed explanation on given chapter and return a json response with an object field content where content is string type but written in markdown style. Also include code example or diagram example if applicable. Don't include the chapterName or the topicName into the markdown response. Just provide the actual content. For more context on the topic you can follow this description: "${topicDescription}" to improve the content quality`;
+  return `
+  Explain the concept on topic: "${topicName}", chapter: "${chapterName}" with detailed explanation on given chapter and return a string response with where explanation content is written in markdown style. Also include code example or diagram example if applicable. Don't include the chapterName or the topicName or any other things into the markdown response just explanation text. For more context on the topic you can follow this description: "${topicDescription}" to improve the content quality. Content example: "# Here's a Heading". Follow the markdown syntax for the content just like the example provided. Don't include any filed name or any other things in the response. Just provide the actual content in markdown with proper examples, code examples (written in markdown format so that it can be rendered as markdown) if needed with format as string`;
 }
 
 export function copyToClipboard(text: string) {

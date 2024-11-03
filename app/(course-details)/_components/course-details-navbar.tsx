@@ -1,12 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import useCourseQuery from "@/hooks/query/useCourseQuery";
+import { UserButton } from "@clerk/nextjs";
 import {
   Home,
   LineChart,
@@ -17,9 +14,14 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import React from "react";
 
 export const CourseDetailsNavbar = () => {
+  const params = useParams();
+  const { courseId } = params || {};
+  const { data } = useCourseQuery(courseId as string);
+
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <Sheet>
@@ -74,27 +76,11 @@ export const CourseDetailsNavbar = () => {
               Analytics
             </Link>
           </nav>
-          <div className="mt-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upgrade to Pro</CardTitle>
-                <CardDescription>
-                  Unlock all features and get unlimited access to our support
-                  team.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button size="sm" className="w-full">
-                  Upgrade
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
         </SheetContent>
       </Sheet>
-      <div className="w-full flex-1">This is course title</div>
+      <div className="w-full flex-1">{data?.title ?? ""}</div>
       <>
-        <Button>Return to Dashboard</Button>
+        <UserButton />
       </>
     </header>
   );

@@ -107,13 +107,16 @@ export function GenerateCourseButton({ courseId }: { courseId: string }) {
         .then((result) => result.response.text());
 
       // Get video ID if quota isn't exceeded
-      const videoIdPromise = getYoutubeVideoWithQuotaCheck(chapter.title);
+      const videoIdPromise = getYoutubeVideoWithQuotaCheck(
+        chapter.ytSearchQuery
+      );
 
       // Wait for both operations
       const [content, videoId] = await Promise.all([
         contentPromise,
         videoIdPromise,
       ]);
+      console.log("Content generated >>", content);
 
       // Update chapter info in background
       backgroundUpdate(

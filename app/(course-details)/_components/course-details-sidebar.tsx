@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Bell } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
 import { CourseDetailsChapterBlock } from "./course-details-chapter-block";
@@ -13,17 +13,19 @@ export const CourseDetailsSidebar = () => {
   const { data: courseChapters } = useChaptersQuery(courseId as string);
 
   return (
-    <div className="hidden border-r bg-muted/40 md:block">
+    <div className="hidden border-r bg-muted/40 md:block h-screen overflow-y-scroll">
       <div className="flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <p className="flex items-center gap-2 font-semibold">
-            {/* <Package2 className="h-6 w-6" /> */}
-            <span className="">Course Chapters Content</span>
+        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 flex-shrink-0">
+          <p className="flex justify-between items-center gap-4 font-semibold">
+            <Button variant="outline" onClick={() => window.history.back()}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <span className="">Course Chapters</span>
           </p>
-          <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
+          {/* <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
             <Bell className="h-4 w-4" />
             <span className="sr-only">Course Progress</span>
-          </Button>
+          </Button> */}
         </div>
         <div className="flex-1">
           <nav className="grid items-start  text-sm font-medium ">
